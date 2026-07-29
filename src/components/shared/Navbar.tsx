@@ -113,7 +113,7 @@ export default function Navbar() {
               <Button variant="ghost">
                 <Link href="/login">Log in</Link>
               </Button>
-              <Button>
+              <Button className="bg-[#006c49]">
                 <Link href="/register">Sign up</Link>
               </Button>
             </div>
