@@ -24,6 +24,7 @@ import Link from "next/link"
 
 const navLinks = [
   { label: "Home", href: "/" },
+  { label: "Properties", href: "/properties" },
   { label: "Features", href: "#" },
   { label: "Pricing", href: "#" },
   { label: "About", href: "#" },
@@ -35,7 +36,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 2xl:px-0">
         {/* Section 1: Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <span className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
