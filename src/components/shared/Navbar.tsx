@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import {
   Command,
   Menu,
@@ -8,9 +8,9 @@ import {
   Settings,
   LogOut,
   LayoutDashboard,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,8 +19,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import Link from "next/link"
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import { logout } from "@/service/logout";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -28,11 +31,37 @@ const navLinks = [
   { label: "Features", href: "#" },
   { label: "Pricing", href: "#" },
   { label: "About", href: "#" },
-]
+];
 
-export default function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
+type IUser = {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    id: string;
+    name: string;
+    email: string;
+    isBanned: boolean;
+    role: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+export default function Navbar({ user }: { user: IUser }) {
+  const router = useRouter();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const userData = user.data;
+
+  const handleLogout = async (action: string) => {
+
+    if (action === "logout" ) {
+      await logout();
+      toast.success("User Logged Out Successfully!");
+      router.push("/");
+    };
+
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -61,26 +90,27 @@ export default function Navbar() {
 
         {/* Section 3: Auth actions */}
         <div className="flex items-center gap-2">
-          {isLoggedIn ? (
+          {user.success ? (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger asChild className="cursor-pointer">
                 <Button
                   variant="ghost"
                   className="relative size-9 rounded-full p-0"
                   aria-label="Open user menu"
                 >
                   <Avatar className="size-9">
-                    <AvatarImage src="/user-avatar.png" alt="User avatar" />
-                    <AvatarFallback>JD</AvatarFallback>
+                    <AvatarFallback>
+                      {userData?.name.slice(0, 2).toUpperCase()}.
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="flex flex-col gap-1">
-                    <span className="text-sm font-medium">Jane Doe</span>
+                    <span className="text-sm font-medium">{userData?.name}</span>
                     <span className="text-xs font-normal text-muted-foreground">
-                      jane@example.com
+                      {userData?.email}
                     </span>
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
@@ -100,10 +130,9 @@ export default function Navbar() {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={() => setIsLoggedIn(false)}
-                >
+                <DropdownMenuItem className="cursor-pointer" variant="destructive" onClick={async () => {
+                  await handleLogout('logout')
+                }}>
                   <LogOut />
                   Log out
                 </DropdownMenuItem>
@@ -123,32 +152,28 @@ export default function Navbar() {
           {/* Mobile menu */}
           <DropdownMenu open={mobileOpen} onOpenChange={setMobileOpen}>
             <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Open menu"
-              className="md:hidden"
-            >
-              <Menu />
-            </Button>
-          </DropdownMenuTrigger>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Open menu"
+                className="md:hidden"
+              >
+                <Menu />
+              </Button>
+            </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 md:hidden">
               {navLinks.map((link) => (
-                <DropdownMenuItem
-                  key={link.label}
-                >
+                <DropdownMenuItem key={link.label}>
                   {link.label}
                 </DropdownMenuItem>
               ))}
-              {!isLoggedIn && (
+              {!user.success && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem >
+                  <DropdownMenuItem>
                     <Link href="/login">Log in</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    Sign up
-                  </DropdownMenuItem>
+                  <DropdownMenuItem>Sign up</DropdownMenuItem>
                 </>
               )}
             </DropdownMenuContent>
@@ -156,5 +181,5 @@ export default function Navbar() {
         </div>
       </nav>
     </header>
-  )
+  );
 }
