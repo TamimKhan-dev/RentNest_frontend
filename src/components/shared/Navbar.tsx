@@ -54,13 +54,11 @@ export default function Navbar({ user }: { user: IUser }) {
   const userData = user.data;
 
   const handleLogout = async (action: string) => {
-
     if (action === "logout" ) {
       await logout();
       toast.success("User Logged Out Successfully!");
       router.push("/");
     };
-
   };
 
   return (

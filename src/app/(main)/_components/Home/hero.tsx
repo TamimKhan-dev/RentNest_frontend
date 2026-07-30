@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Building, Star, Headset } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const stats = [
   {
@@ -49,9 +50,9 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-wrap items-center gap-4">
-            <Button className="bg-[#006c49] hover:bg-[#006c49]/90 text-white font-semibold px-6 py-6 h-auto rounded-lg cursor-pointer">
+            <Link href="/properties" className="bg-[#006c49] hover:bg-[#006c49]/90 text-white font-semibold px-6 py-6 h-auto rounded-lg cursor-pointer">
               Browse Properties
-            </Button>
+            </Link>
             <Button
               variant="outline"
               className="border-[#bbcabf] text-[#0b1c30] font-semibold px-6 py-6 h-auto rounded-lg hover:bg-[#f8f9ff] cursor-pointer"
