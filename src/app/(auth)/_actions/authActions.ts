@@ -25,14 +25,18 @@ export const loginAction = async (data: LoginFormData) => {
 
     cookieStore.set("accessToken", result.data.accessToken, {
       httpOnly: true,
+      secure: true,
       maxAge: 60 * 60 * 24, // 1 day
       sameSite: "lax",
+      path: "/"
     });
 
     cookieStore.set("refreshToken", result.data.refreshToken, {
       httpOnly: true,
+      secure: true,
       maxAge: 60 * 60 * 24 * 7, // 7 day
       sameSite: "lax",
+      path: "/"
     });
 
     redirect("/");
