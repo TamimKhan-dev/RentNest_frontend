@@ -16,6 +16,8 @@ import { RegisterFormData, registerSchema } from "@/lib/schema/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "@/components/ui/spinner";
 import { useState } from "react";
+import { registerAction } from "../_actions/authActions";
+import { toast } from "sonner";
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -26,8 +28,14 @@ export default function RegisterForm() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({ resolver: zodResolver(registerSchema) });
 
-  const onSubmit = (data: RegisterFormData) => {
-    console.log(data);
+  const onSubmit = async (data: RegisterFormData) => {
+    const result = await registerAction(data);
+
+    if (result.success) {
+      toast.success("User Registered Successfully!");
+    } else {
+      toast.error(result.message);
+    };
   };
 
   return (
@@ -130,7 +138,7 @@ export default function RegisterForm() {
           <Controller
             name="role"
             control={control}
-            defaultValue="TENANT"
+            defaultValue="Tenant"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
@@ -140,8 +148,8 @@ export default function RegisterForm() {
                   <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="TENANT">Tenant</SelectItem>
-                  <SelectItem value="LANDLORD">Landlord</SelectItem>
+                  <SelectItem value="Tenant">Tenant</SelectItem>
+                  <SelectItem value="Landlord">Landlord</SelectItem>
                 </SelectContent>
               </Select>
             )}
