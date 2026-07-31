@@ -21,7 +21,7 @@ export default function RootLayout({
       className={cn("h-full", "antialiased", "font-sans", inter.variable)}
     >
       <body className="min-h-full">
-        <Toaster position="top-right"/>
+        <Toaster position="top-right" richColors/>
         {children}
       </body>
     </html>

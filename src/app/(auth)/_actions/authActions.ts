@@ -1,32 +1,13 @@
 "use server";
 
+import { LoginFormData, RegisterFormData } from "@/lib/schema/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-type ILoginState = {
-  success: true;
-  statusCode: number;
-  message: string;
-  data: {
-    accessToken: string;
-    refreshToken: string;
-  };
-};
-
-type IUserData = {
-  name: string;
-  email: string;
-  password: string;
-  role: "Tenant" | "Landlord";
-}
-
-export const loginAction = async (_previousState: ILoginState, formData: FormData) => {
-  const email = formData.get("email");
-  const password = formData.get("password");
+export const loginAction = async (data: LoginFormData) => {
 
   const payload = {
-    email,
-    password,
+    ...data
   };
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/login`, {
@@ -60,7 +41,7 @@ export const loginAction = async (_previousState: ILoginState, formData: FormDat
   return result;
 };
 
-export const registerAction = async (data: IUserData) => {
+export const registerAction = async (data: RegisterFormData) => {
   const payload = { 
     ...data
   };

@@ -4,25 +4,37 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
-import { useActionState, useEffect, useState } from "react";
+import { useState } from "react";
 import { loginAction } from "../_actions/authActions";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+import { LoginFormData, loginSchema } from "@/lib/schema/auth";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [state, formAction, pending] = useActionState(loginAction, false);
+  // const [state, formAction, pending] = useActionState(loginAction, false);
 
-  useEffect(() => {
-    if (!state) return;
+  // useEffect(() => {
+  //   if (!state) return;
 
-    if (!state.success) {
-      toast.error(state.message || "Login failed")
-    };
-  }, [state]);
+  //   if (!state.success) {
+  //     toast.error(state.message || "Login failed")
+  //   };
+  // }, [state]);
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormData>({ resolver: zodResolver(loginSchema)});
+
+  const onSubmit = async (data: LoginFormData) => {
+    const result = await loginAction(data);
+
+    if (!result.success) {
+      toast.error(result.message || "Login failed")
+    } 
+  };
 
   return (
-    <form className="space-y-6" action={formAction}>
+    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
       {/* Email Field */}
       <div className="space-y-2">
         <Label htmlFor="email" className="text-sm font-semibold text-[#515f74]">
@@ -35,14 +47,16 @@ export default function LoginForm() {
           />
           <Input
             id="email"
-            name="email"
+            { ...register('email', { required: true })}
             type="email"
             autoComplete="email"
-            required
             placeholder="name@example.com"
             className="pl-12 pr-4 py-3 h-auto rounded-lg border-[#6c7a71] focus-visible:ring-4 focus-visible:ring-[#10b981]/20 focus-visible:border-[#006c49]"
           />
         </div>
+        {errors.email && (
+          <span className="text-red-400 text-xs">{errors.email?.message}</span>
+        )}
       </div>
 
       {/* Password Field */}
@@ -68,10 +82,9 @@ export default function LoginForm() {
           />
           <Input
             id="password"
-            name="password"
+            { ...register("password", { required: true })}
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
-            required
             placeholder="••••••••"
             className="pl-12 pr-12 py-3 h-auto rounded-lg border-[#6c7a71] focus-visible:ring-4 focus-visible:ring-[#10b981]/20 focus-visible:border-[#006c49]"
           />
@@ -84,6 +97,9 @@ export default function LoginForm() {
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
+        {errors.password && (
+          <span className="text-red-400 text-xs">{errors.password?.message}</span>
+        )}
       </div>
 
       {/* Login Button */}
@@ -91,7 +107,7 @@ export default function LoginForm() {
         type="submit"
         className="w-full bg-[#10b981] hover:bg-[#10b981]/90 text-[#00422b] cursor-pointer font-semibold text-lg py-4 h-auto rounded-xl shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
       >
-        {pending ? <Spinner /> : "Login"}
+        {isSubmitting ? <Spinner /> : "Login"}
       </Button>
 
       {/* Divider */}
