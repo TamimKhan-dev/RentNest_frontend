@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
-import DashboardShell from "./dashboard/_components/dashboardShell";
-import { UserRole } from "./dashboard/_components/sidebar";
+import DashboardShell from "./_components/dashboardShell";
+import { UserRole } from "./_components/sidebar";
+
 
 
 export default async function DashboardLayout({

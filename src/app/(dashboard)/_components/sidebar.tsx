@@ -44,9 +44,9 @@ const roleNav: Record<UserRole, NavSection> = {
   TENANT: {
     label: "Tenant",
     items: [
-      { label: "Overview", icon: LayoutGrid, href: "/dashboard/tenant" },
+      { label: "Overview & Requests", icon: LayoutGrid, href: "/dashboard/tenant" },
       { label: "Payments", icon: CreditCard, href: "/dashboard/tenant/payments" },
-      { label: "Requests", icon: ClipboardList, href: "/dashboard/tenant/requests/2/pay" },
+      { label: "Reviews", icon: ClipboardList, href: "/dashboard/tenant/reviews" },
     ],
   },
   LANDLORD: {
