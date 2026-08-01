@@ -2,12 +2,13 @@
 
 import {
   LayoutGrid,
-  FileText,
   Building2,
   PlusSquare,
-  BarChart3,
   Users2,
-  Home,
+  type LucideIcon,
+  CreditCard,
+  ClipboardList,
+  Inbox,
 } from "lucide-react";
 import {
   Sheet,
@@ -15,90 +16,76 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import Link from "next/link";
+import Logo from "@/components/shared/Logo";
+import SidebarContent from "./sidebarContent";
 
-const navGroups = [
-  {
-    label: "Tenant",
-    items: [
-      { label: "Overview", icon: LayoutGrid, active: true },
-      { label: "Requests", icon: FileText, active: false },
-    ],
-  },
-  {
-    label: "Landlord",
-    items: [
-      { label: "My Properties", icon: Building2, active: false },
-      { label: "Add Property", icon: PlusSquare, active: false },
-    ],
-  },
-  {
-    label: "Admin",
-    items: [
-      { label: "Analytics", icon: BarChart3, active: false },
-      { label: "Users", icon: Users2, active: false },
-    ],
-  },
-];
+export type UserRole = "TENANT" | "LANDLORD" | "ADMIN";
 
-function Logo() {
-  return (
-    <Link href="/">
-      <div className="flex items-center gap-2 px-2">
-        <div className="w-8 h-8 rounded-lg bg-[#006c49] flex items-center justify-center">
-          <Home size={16} className="text-white" />
-        </div>
-        <span className="font-bold text-lg text-[#0b1c30]">RentNest</span>
-      </div>
-    </Link>
-  );
-}
+type NavItem = {
+  label: string;
+  icon: LucideIcon;
+  href: string;
+};
 
-function NavContent({ onNavigate }: { onNavigate?: () => void }) {
-  return (
-    <nav className="flex flex-col gap-6">
-      {navGroups.map((group) => (
-        <div key={group.label}>
-          <p className="text-[11px] font-semibold tracking-wide uppercase text-[#94a3b8] px-3 mb-2">
-            {group.label}
-          </p>
-          <div className="flex flex-col gap-1">
-            {group.items.map(({ label, icon: Icon, active }) => (
-              <button
-                key={label}
-                onClick={onNavigate}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left ${
-                  active
-                    ? "bg-[#d7f5e9] text-[#006c49]"
-                    : "text-[#515f74] hover:bg-[#f8f9ff]"
-                }`}
-              >
-                <Icon size={17} />
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
-    </nav>
-  );
-}
+export type NavSection = {
+  label: string;
+  items: NavItem[];
+};
 
 type SidebarProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  userRole: UserRole;
 };
 
-export default function Sidebar({ open, onOpenChange }: SidebarProps) {
+
+
+const roleNav: Record<UserRole, NavSection> = {
+  TENANT: {
+    label: "Tenant",
+    items: [
+      { label: "Overview", icon: LayoutGrid, href: "/dashboard/tenant" },
+      { label: "Payments", icon: CreditCard, href: "/dashboard/tenant/payments" },
+      { label: "Requests", icon: ClipboardList, href: "/dashboard/tenant/requests/2/pay" },
+    ],
+  },
+  LANDLORD: {
+    label: "Landlord",
+    items: [
+      { label: "Overview", icon: LayoutGrid, href: "/dashboard/landlord" },
+      { label: "My Properties", icon: Building2, href: "/dashboard/landlord/properties" },
+      { label: "Add Property", icon: PlusSquare, href: "/dashboard/landlord/properties/new" },
+      { label: "Rental requests", icon: Inbox, href: "/dashboard/landlord/requests" },
+    ],
+  },
+  ADMIN: {
+    label: "Admin",
+    items: [
+      { label: "Overview", icon: LayoutGrid, href: "/dashboard/admin" },
+      { label: "Properties", icon: Building2, href: "/dashboard/admin/properties" },
+      { label: "Users", icon: Users2, href: "/dashboard/admin/users" },
+    ],
+  },
+};
+
+
+
+export default function Sidebar({
+  open,
+  onOpenChange,
+  userRole,
+}: SidebarProps) {
+  const sections: NavSection[] = [roleNav[userRole]];
+
   return (
     <>
-      {/* Desktop sidebar — always visible from md up */}
+      {/* Desktop sidebar */}
       <aside className="hidden md:flex w-64 shrink-0 bg-white border-r border-[#e5eeff] h-screen sticky top-0 py-6 px-4 flex-col gap-8">
         <Logo />
-        <NavContent />
+        <SidebarContent sections={sections} />
       </aside>
 
-      {/* Mobile sidebar — slide-in drawer below md */}
+      {/* Mobile sidebar */}
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="left" className="w-72 p-4 flex flex-col gap-8">
           <SheetHeader className="p-0">
@@ -106,7 +93,10 @@ export default function Sidebar({ open, onOpenChange }: SidebarProps) {
               <Logo />
             </SheetTitle>
           </SheetHeader>
-          <NavContent onNavigate={() => onOpenChange(false)} />
+          <SidebarContent
+            sections={sections}
+            onNavigate={() => onOpenChange(false)}
+          />
         </SheetContent>
       </Sheet>
     </>

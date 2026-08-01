@@ -1,5 +1,6 @@
 import { Heart, Star, MapPin, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type Property = {
   name: string;
@@ -138,13 +139,13 @@ export default function FeaturedProperties() {
               offering a unique blend of style and comfort.
             </p>
           </div>
-          <a
-            href="#"
+          <Link
+            href="/properties"
             className="flex items-center gap-1 text-sm font-semibold text-[#006c49] hover:underline whitespace-nowrap"
           >
-            View all 2,500 properties
+            View all properties
             <ArrowRight size={14} />
-          </a>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

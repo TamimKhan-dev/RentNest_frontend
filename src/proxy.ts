@@ -74,7 +74,12 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/not-found", request.url));
   }
 
-  return NextResponse.next();
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("userRole", userRole ?? "");
+
+  return NextResponse.next({
+    request: { headers: requestHeaders },
+  });
 }
 
 export const config = {

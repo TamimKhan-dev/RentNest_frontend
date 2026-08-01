@@ -8,9 +8,10 @@ import Link from "next/link";
 
 type DashboardHeaderProps = {
   onMenuClick: () => void;
+  userRole: string;
 };
 
-export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
+export default function DashboardHeader({ onMenuClick, userRole }: DashboardHeaderProps) {
   return (
     <header className="w-full bg-white border-b border-[#e5eeff] px-4 md:px-6 py-4 flex items-center justify-between gap-3">
       <div className="flex items-center gap-3 min-w-0">
@@ -52,7 +53,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
               Sarah Jenkins
             </p>
             <Badge className="bg-[#eff4ff] text-[#515f74] hover:bg-[#eff4ff] text-[10px] font-semibold px-1.5 py-0 h-4">
-              ADMIN
+              {userRole}
             </Badge>
           </div>
         </div>

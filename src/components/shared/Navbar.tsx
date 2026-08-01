@@ -48,18 +48,42 @@ type IUser = {
   };
 };
 
-export default function Navbar({ user }: { user: IUser }) {
+export default function Navbar({
+  user,
+  userRole,
+}: {
+  user: IUser;
+  userRole: string;
+}) {
+  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const router = useRouter();
-  const [mobileOpen, setMobileOpen] = useState(false);
   const userData = user.data;
+  let redirectTo: string;
 
   const handleLogout = async (action: string) => {
-    if (action === "logout" ) {
+    if (action === "logout") {
       await logout();
       toast.success("User Logged Out Successfully!");
       router.push("/");
-    };
+    }
   };
+
+  switch (userRole) {
+    case "LANDLORD":
+      redirectTo = "/dashboard/landlord";
+      break;
+
+    case "TENANT":
+      redirectTo = "/dashboard/tenant";
+      break;
+
+    case "ADMIN":
+      redirectTo = "/dashboard/admin";
+      break;
+    default:
+      redirectTo = "/";
+      break;
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -106,7 +130,9 @@ export default function Navbar({ user }: { user: IUser }) {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="flex flex-col gap-1">
-                    <span className="text-sm font-medium">{userData?.name}</span>
+                    <span className="text-sm font-medium">
+                      {userData?.name}
+                    </span>
                     <span className="text-xs font-normal text-muted-foreground">
                       {userData?.email}
                     </span>
@@ -114,10 +140,12 @@ export default function Navbar({ user }: { user: IUser }) {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <LayoutDashboard />
-                    Dashboard
-                  </DropdownMenuItem>
+                  <Link href={redirectTo}>
+                    <DropdownMenuItem className="cursor-pointer">
+                      <LayoutDashboard />
+                      Dashboard
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuItem>
                     <User />
                     Profile
@@ -128,9 +156,13 @@ export default function Navbar({ user }: { user: IUser }) {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer" variant="destructive" onClick={async () => {
-                  await handleLogout('logout')
-                }}>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  variant="destructive"
+                  onClick={async () => {
+                    await handleLogout("logout");
+                  }}
+                >
                   <LogOut />
                   Log out
                 </DropdownMenuItem>
