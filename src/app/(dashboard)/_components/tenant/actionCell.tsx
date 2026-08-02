@@ -1,15 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { Status } from "../../tenant/page";
+import { Status } from "../../dashboard/tenant/page";
+import Link from "next/link";
 
 
 
-export default function ActionCell({ status }: { status: Status }) {
+export default function ActionCell({ status, rentalId }: { status: Status, rentalId: number }) {
   switch (status) {
       case "APPROVED":
         return (
-          <Button className="bg-[#006c49] hover:bg-[#006c49]/90 text-white text-xs h-auto px-4 py-2 rounded-lg whitespace-nowrap">
+          <Link href={`/dashboard/tenant/requests/${rentalId}/pay`} className="bg-[#006c49] hover:bg-[#006c49]/90 text-white text-xs h-auto px-4 py-2 rounded-lg whitespace-nowrap">
             Pay Now
-          </Button>
+          </Link>
         );
       case "PENDING":
         return (

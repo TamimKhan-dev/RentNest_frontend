@@ -31,7 +31,9 @@ export type Status =
   | "COMPLETED";
 
 const fetchRentalRequests = async () => {
-  const res = await fetch(`/api/rentals`);
+  const res = await fetch(`/api/rentals`, {
+    cache: 'no-cache'
+  });
   if (!res.ok) throw new Error("Network response was not ok");
   return res.json();
 };
@@ -42,6 +44,7 @@ export default function OverviewRentalRequests() {
   const { data, error, isLoading, isError } = useQuery({
     queryKey: ["rentalRequests"],
     queryFn: fetchRentalRequests,
+    refetchOnMount: "always"
   });
 
   if (isLoading) return <SpinnerDefault />;

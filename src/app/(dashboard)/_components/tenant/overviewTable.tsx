@@ -1,8 +1,6 @@
 import ActionCell from "./actionCell";
 import { Status } from "../../dashboard/tenant/page";
 
-
-
 type RentalRequest = {
   id: number;
   propertyId: number;
@@ -80,7 +78,7 @@ export default function OverviewTable({ data }: {data: RentalRequest[]}) {
                 </span>
               </td>
               <td className="px-4 py-3">
-                <ActionCell status={req.status} />
+                <ActionCell status={req.status} rentalId={req.id} />
               </td>
             </tr>
           ))}
