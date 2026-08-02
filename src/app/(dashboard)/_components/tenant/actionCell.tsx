@@ -45,7 +45,7 @@ export default function ActionCell({
       return (
         <Link
           href={`/dashboard/tenant/requests/${rentalId}/pay`}
-          className="bg-[#006c49] hover:bg-[#006c49]/90 text-white text-xs h-auto px-4 py-2 rounded-lg whitespace-nowrap"
+          className="bg-[#1a56db] hover:bg-[#1a56db]/90 text-white text-xs h-auto px-4 py-2 rounded-lg whitespace-nowrap inline-flex items-center"
         >
           Pay Now
         </Link>
@@ -55,7 +55,7 @@ export default function ActionCell({
         <Button
           disabled
           variant="outline"
-          className="text-xs h-auto px-4 py-2 rounded-lg text-[#94a3b8] border-[#e5eeff] whitespace-nowrap"
+          className="text-xs h-auto px-4 py-2 rounded-lg bg-[#fef3c7] text-[#92400e] border-[#fde68a] whitespace-nowrap"
         >
           Waiting for Approval
         </Button>
@@ -66,7 +66,7 @@ export default function ActionCell({
           onClick={() => markAsCompleted()}
           disabled={isCompleting}
           variant="outline"
-          className="text-xs h-auto px-4 py-2 rounded-lg bg-[#e8f0fe] text-[#1a56db] border border-[#c3d9fb] hover:bg-[#d9e6fc] whitespace-nowrap font-medium"
+          className="text-xs h-auto px-4 py-2 rounded-lg bg-[#e6f4ea] text-[#0f7a3d] border border-[#bfe3cc] hover:bg-[#d3ecdc] whitespace-nowrap font-medium"
         >
           {isCompleting ? (
             <>
@@ -88,14 +88,18 @@ export default function ActionCell({
       return (
         <>
           <Button
-          onClick={() =>  setIsModalOpen(true)}
-          variant="outline"
-          className="text-xs h-auto px-4 py-2 rounded-lg border-[#bbcabf] text-[#0b1c30] whitespace-nowrap cursor-pointer"
-        >
-          Leave Review
-        </Button>
+            onClick={() => setIsModalOpen(true)}
+            variant="outline"
+            className="text-xs h-auto px-4 py-2 rounded-lg bg-[#f1f5f9] text-[#475569] border-[#cbd5e1] whitespace-nowrap cursor-pointer"
+          >
+            Leave Review
+          </Button>
 
-        <LeaveReviewModal open={isModalOpen} onOpenChange={setIsModalOpen} propertyId={propertyId}/>
+          <LeaveReviewModal
+            open={isModalOpen}
+            onOpenChange={setIsModalOpen}
+            propertyId={propertyId}
+          />
         </>
       );
   }
