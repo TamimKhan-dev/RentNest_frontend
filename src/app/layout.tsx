@@ -3,6 +3,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
+import Providers from "./providers";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -21,8 +22,8 @@ export default function RootLayout({
       className={cn("h-full", "antialiased", "font-sans", inter.variable)}
     >
       <body className="min-h-full">
-        <Toaster position="top-right" richColors/>
-        {children}
+        <Toaster position="top-right" richColors />
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

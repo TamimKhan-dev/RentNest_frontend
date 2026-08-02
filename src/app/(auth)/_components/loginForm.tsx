@@ -31,6 +31,7 @@ export default function LoginForm() {
     if (!result.success) {
       toast.error(result.message || "Login failed")
     } 
+    console.log(result);
   };
 
   return (

@@ -19,44 +19,65 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import OverviewTable from "../../_components/tenant/overviewTable";
+import { useQuery } from "@tanstack/react-query";
+import SpinnerDefault from "@/app/loading";
+import { getRentalRequestStats } from "@/utils/utils";
 
+export type Status =
+  | "APPROVED"
+  | "PENDING"
+  | "ACTIVE"
+  | "REJECTED"
+  | "COMPLETED";
 
-export type Status = "APPROVED" | "PENDING" | "ACTIVE" | "REJECTED" | "COMPLETED";
-
-const stats = [
-  {
-    label: "Total Requests",
-    value: 12,
-    icon: ClipboardList,
-    bg: "bg-[#e0e7ff]",
-    iconColor: "text-[#4338ca]",
-  },
-  {
-    label: "Pending",
-    value: 3,
-    icon: Clock,
-    bg: "bg-[#fef3c7]",
-    iconColor: "text-[#b45309]",
-  },
-  {
-    label: "Approved",
-    value: 1,
-    icon: CheckCircle2,
-    bg: "bg-[#ede9fe]",
-    iconColor: "text-[#6d28d9]",
-  },
-  {
-    label: "Active Rentals",
-    value: 2,
-    icon: Home,
-    bg: "bg-[#d7f5e9]",
-    iconColor: "text-[#006c49]",
-  },
-];
+const fetchRentalRequests = async () => {
+  const res = await fetch(`/api/rentals`);
+  if (!res.ok) throw new Error("Network response was not ok");
+  return res.json();
+};
 
 export default function OverviewRentalRequests() {
   const [page, setPage] = useState(1);
   const totalPages = 2;
+  const { data, error, isLoading, isError } = useQuery({
+    queryKey: ["rentalRequests"],
+    queryFn: fetchRentalRequests,
+  });
+
+  if (isLoading) return <SpinnerDefault />;
+  if (isError) return <div>Error: {(error as Error).message}</div>;
+  const stats = getRentalRequestStats(data.data);
+
+  const statsCards = [
+    {
+      label: "Total Requests",
+      value: stats.totalRentalRequests,
+      icon: ClipboardList,
+      bg: "bg-[#e0e7ff]",
+      iconColor: "text-[#4338ca]",
+    },
+    {
+      label: "Pending",
+      value: stats.pendingRentalRequests,
+      icon: Clock,
+      bg: "bg-[#fef3c7]",
+      iconColor: "text-[#b45309]",
+    },
+    {
+      label: "Approved",
+      value: stats.approvedRentalRequests,
+      icon: CheckCircle2,
+      bg: "bg-[#ede9fe]",
+      iconColor: "text-[#6d28d9]",
+    },
+    {
+      label: "Active Rentals",
+      value: stats.activeRentals,
+      icon: Home,
+      bg: "bg-[#d7f5e9]",
+      iconColor: "text-[#006c49]",
+    },
+  ];
 
   return (
     <div className="w-full">
@@ -72,7 +93,7 @@ export default function OverviewRentalRequests() {
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {stats.map(({ label, value, icon: Icon, bg, iconColor }) => (
+        {statsCards.map(({ label, value, icon: Icon, bg, iconColor }) => (
           <div
             key={label}
             className="bg-white rounded-2xl border border-[#e5eeff] p-4 flex items-center gap-3"
@@ -126,7 +147,7 @@ export default function OverviewRentalRequests() {
       </div>
 
       {/* Table */}
-      <OverviewTable />
+      <OverviewTable data={data.data} />
 
       {/* Footer: count + pagination */}
       <div className="bg-white rounded-b-2xl border border-t-0 border-[#e5eeff] px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
