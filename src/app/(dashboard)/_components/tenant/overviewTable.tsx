@@ -78,7 +78,7 @@ export default function OverviewTable({ data }: {data: RentalRequest[]}) {
                 </span>
               </td>
               <td className="px-4 py-3">
-                <ActionCell status={req.status} rentalId={req.id} />
+                <ActionCell status={req.status} rentalId={req.id} propertyId={req.propertyId}/>
               </td>
             </tr>
           ))}

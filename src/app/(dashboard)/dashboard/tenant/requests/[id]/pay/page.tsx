@@ -14,35 +14,15 @@ import {
   Headset,
   ArrowRight,
   LucideIcon,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import SpinnerDefault from "@/app/loading";
 
-// const request = {
-//   property: "Emerald Heights Suite",
-//   price: "$450/mo",
-//   location: "Downtown District, Seattle, WA",
-//   image: "https://picsum.photos/seed/emerald-heights-suite/400/400",
-//   description:
-//     "A sun-drenched penthouse suite featuring premium architectural finishes, smart home technology, and unparallele...",
-//   amenities: [
-//     { label: "WiFi", icon: Wifi },
-//     { label: "Parking", icon: ParkingSquare },
-//     { label: "Kitchen", icon: UtensilsCrossed },
-//     { label: "Balcony", icon: DoorOpen },
-//   ],
-//   requestId: "#REQ-8293",
-//   requestedOn: "Oct 24, 2023",
-//   leaseTerm: "12 Months (Starting Nov 1st)",
-//   status: "Pending Payment",
-//   amountDue: "$450.00",
-// };
-
-// Keep this as a static lookup — icons never come from the API
 const amenityIconMap: Record<string, LucideIcon> = {
   WiFi: Wifi,
   Parking: ParkingSquare,
@@ -62,6 +42,30 @@ export default function ConfirmAndPayPage() {
       });
       if (!res.ok) throw new Error("Network response was not ok");
       return res.json();
+    },
+  });
+
+const { mutate: initiateCheckout, isPending: isCheckoutLoading } =
+  useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/payments/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rentalRequestId: id }),
+      });
+      if (!res.ok) throw new Error("Failed to create checkout session");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      const url = data?.data?.paymentUrl;
+      if (url) {
+        window.location.href = url;
+      }
+    },
+    onError: (err) => {
+      console.error(err);
     },
   });
 
@@ -194,9 +198,22 @@ export default function ConfirmAndPayPage() {
             Your payment will securely complete the rental confirmation.
           </p>
         </div>
-        <Button className="w-full sm:w-auto bg-[#006c49] hover:bg-[#006c49]/90 text-white font-semibold h-auto py-3 px-6 rounded-xl gap-2 whitespace-nowrap">
-          Proceed to Payment
-          <ArrowRight size={16} />
+        <Button
+          onClick={() => initiateCheckout()}
+          disabled={isCheckoutLoading}
+          className="w-full sm:w-auto bg-[#006c49] hover:bg-[#006c49]/90 text-white font-semibold h-auto py-3 px-6 rounded-xl gap-2 whitespace-nowrap"
+        >
+          {isCheckoutLoading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              Preparing checkout...
+            </>
+          ) : (
+            <>
+              Proceed to Payment
+              <ArrowRight size={16} />
+            </>
+          )}
         </Button>
       </div>
 
