@@ -23,14 +23,17 @@ import {
 import { Button } from "@/components/ui/button";
 import PropertyInformation from "@/app/(dashboard)/_components/landlord/propertyInformation";
 import { uploadImageToCloud } from "@/utils/uploadImageToCloud";
+import { Spinner } from "@/components/ui/spinner";
+import Image from "next/image";
+import { useCreateProperty } from "@/hooks/useCreateProperty";
 
 export type PropertyFormData = {
   title: string;
   description: string;
   location: string;
   price: string;
-  category: string;
-  available: boolean;
+  categoryId: string;
+  isAvailable: boolean;
 };
 
 const amenitiesList: { label: string; icon: LucideIcon }[] = [
@@ -60,8 +63,8 @@ export default function AddNewPropertyPage() {
       description: "",
       location: "",
       price: "",
-      category: "",
-      available: false,
+      categoryId: "",
+      isAvailable: false,
     },
   });
 
@@ -78,14 +81,12 @@ export default function AddNewPropertyPage() {
 
   const setFile = (fileList: FileList | null) => {
     if (!fileList || fileList.length === 0) return;
-    const file = fileList[0]; // only one image is accepted
+    const file = fileList[0]; 
 
     const isValid =
       ["image/jpeg", "image/png", "image/webp"].includes(file.type) &&
       file.size <= MAX_IMAGE_MB * 1024 * 1024;
     if (!isValid) return;
-
-    // revoke the previous preview URL before replacing it, to avoid a memory leak
     if (image) URL.revokeObjectURL(image.preview);
 
     setImage({ file, preview: URL.createObjectURL(file) });
@@ -96,17 +97,21 @@ export default function AddNewPropertyPage() {
     setImage(null);
   };
 
+  const { mutateAsync: createPropertyMutation } = useCreateProperty();
+
   const onSubmit = async (data: PropertyFormData) => {
     const imageUrl = image ? await uploadImageToCloud(image.file) : null;
+    console.log("categoryId: " + Number(data.categoryId));
 
     const payload = {
       ...data,
-      category: Number(data.category),
+      categoryId: Number(data.categoryId),
       amenities: selectedAmenities,
       image: imageUrl,
+      price: parseFloat(data.price)
     };
 
-    console.log(payload);
+    await createPropertyMutation(payload);
   };
 
   return (
@@ -203,11 +208,12 @@ export default function AddNewPropertyPage() {
           </div>
         ) : (
           <div className="relative w-40 aspect-square rounded-lg overflow-hidden border border-[#e5eeff] group">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={image.preview}
               alt="Property"
               className="w-full h-full object-cover"
+              width={300}
+              height={300}
             />
             <button
               type="button"
@@ -226,9 +232,9 @@ export default function AddNewPropertyPage() {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full sm:w-auto bg-[#006c49] hover:bg-[#006c49]/90 text-white font-semibold h-auto py-3 px-8 rounded-xl"
+          className="w-full sm:w-auto bg-[#006c49] hover:bg-[#006c49]/90 text-white font-semibold h-auto py-3 px-8 rounded-xl cursor-pointer"
         >
-          Create Property
+          {isSubmitting ? <><Spinner /> Creating...</> : "Create Property"}
         </Button>
         <Button
           type="button"

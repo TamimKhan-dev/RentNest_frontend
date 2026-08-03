@@ -67,7 +67,7 @@ export default function PropertyInformation({
             Description
           </label>
           <Textarea
-            {...register("description")}
+            {...register("description", { required: "Description is required." })}
             placeholder="Describe the unique features of your property..."
             rows={4}
             className="resize-none rounded-lg border-[#bbcabf]"
@@ -85,7 +85,7 @@ export default function PropertyInformation({
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8] pointer-events-none"
               />
               <Input
-                {...register("location")}
+                {...register("location", { required: "Location is required." })}
                 placeholder="Full Address"
                 className="pl-9 h-auto py-2.5 rounded-lg border-[#bbcabf]"
               />
@@ -102,7 +102,7 @@ export default function PropertyInformation({
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8] pointer-events-none"
               />
               <Input
-                {...register("price")}
+                {...register("price", { required: "Price is required." })}
                 type="number"
                 step="0.01"
                 placeholder="0.00"
@@ -118,7 +118,7 @@ export default function PropertyInformation({
               Property Category
             </label>
             <Controller
-              name="category"
+              name="categoryId"
               control={control}
               rules={{ required: "Please select a category" }}
               render={({ field }) => (
@@ -152,7 +152,7 @@ export default function PropertyInformation({
               </p>
             </div>
             <Controller
-              name="available"
+              name="isAvailable"
               control={control}
               render={({ field }) => (
                 <Switch
