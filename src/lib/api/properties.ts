@@ -1,13 +1,4 @@
-export type CreatePropertyPayload = {
-  title: string;
-  description: string;
-  location: string;
-  price: number;
-  categoryId: number;
-  isAvailable: boolean;
-  amenities: string[];
-  image: string | null;
-};
+import { CreatePropertyPayload, Property } from "@/types/property";
 
 export async function createProperty(payload: CreatePropertyPayload) {
   const res = await fetch("/api/landlord/properties", {
@@ -23,4 +14,15 @@ export async function createProperty(payload: CreatePropertyPayload) {
   }
 
   return data;
+}
+
+export async function getLandlordProperties(): Promise<Property[]> {
+  const res = await fetch("/api/landlord/landlord-properties");
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(json?.message || "Failed to load properties");
+  }
+
+  return json.data as Property[];
 }
