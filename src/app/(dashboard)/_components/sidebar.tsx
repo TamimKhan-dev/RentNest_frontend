@@ -53,7 +53,6 @@ const roleNav: Record<UserRole, NavSection> = {
     label: "Landlord",
     items: [
       { label: "Overview", icon: LayoutGrid, href: "/dashboard/landlord" },
-      { label: "My Properties", icon: Building2, href: "/dashboard/landlord/properties" },
       { label: "Add Property", icon: PlusSquare, href: "/dashboard/landlord/properties/new" },
       { label: "Rental requests", icon: Inbox, href: "/dashboard/landlord/requests" },
     ],
