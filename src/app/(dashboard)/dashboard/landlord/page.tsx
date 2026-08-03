@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/select";
 import { useLandlordProperties } from "@/hooks/useLandlordProperties";
 import { Property } from "@/types/property";
+import DeletePropertyDialog from "../../_components/landlord/deletePropertyModal";
+
 
 export default function OverviewMyProperties() {
   const { data: properties = [], isLoading, isError } = useLandlordProperties();
@@ -29,6 +31,11 @@ export default function OverviewMyProperties() {
   const toggleActive = (id: number) => {
     setToggles((prev) => ({ ...prev, [id]: !isActive({ id } as Property) }));
   };
+
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
 
   const totalProperties = properties.length;
   const availableProperties = properties.filter((p) => p.isAvailable).length;
@@ -243,13 +250,16 @@ export default function OverviewMyProperties() {
                       />
                       <button
                         aria-label="Edit property"
-                        className="w-7 h-7 flex items-center justify-center rounded-md bg-[#eff4ff] text-[#1d4ed8] hover:bg-[#dbeafe] transition-colors"
+                        className="w-7 h-7 flex items-center justify-center rounded-md bg-[#eff4ff] text-[#1d4ed8] hover:bg-[#dbeafe] transition-colors cursor-pointer"
                       >
                         <Pencil size={13} />
                       </button>
                       <button
                         aria-label="Delete property"
-                        className="w-7 h-7 flex items-center justify-center rounded-md bg-[#fef3c7] text-[#b45309] hover:bg-[#fde68a] transition-colors"
+                        onClick={() =>
+                          setDeleteTarget({ id: property.id, name: property.title })
+                        }
+                        className="w-7 h-7 flex items-center justify-center rounded-md bg-[#fef3c7] text-[#b45309] hover:bg-[#fde68a] transition-colors cursor-pointer"
                       >
                         <Trash2 size={13} />
                       </button>
@@ -261,6 +271,15 @@ export default function OverviewMyProperties() {
           </table>
         )}
       </div>
+
+      <DeletePropertyDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        propertyId={deleteTarget?.id ?? null}
+        propertyName={deleteTarget?.name}
+      />
     </div>
   );
 }
