@@ -101,7 +101,6 @@ export default function AddNewPropertyPage() {
 
   const onSubmit = async (data: PropertyFormData) => {
     const imageUrl = image ? await uploadImageToCloud(image.file) : null;
-    console.log("categoryId: " + Number(data.categoryId));
 
     const payload = {
       ...data,

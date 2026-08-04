@@ -22,7 +22,10 @@ import {
 import { useLandlordProperties } from "@/hooks/useLandlordProperties";
 import { Property } from "@/types/property";
 import DeletePropertyDialog from "../../_components/landlord/deletePropertyModal";
-
+import PropertyUpdateModal, {
+  type EditablePropertyData,
+} from "../../_components/landlord/propertyUpdateModal";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function OverviewMyProperties() {
   const { data: properties = [], isLoading, isError } = useLandlordProperties();
@@ -36,6 +39,20 @@ export default function OverviewMyProperties() {
     id: number;
     name: string;
   } | null>(null);
+
+  const [editTarget, setEditTarget] = useState<EditablePropertyData | null>(null);
+
+  const openEdit = (property: Property) => {
+    setEditTarget({
+      id: property.id,
+      title: property.title,
+      description: property.description,
+      price: String(property.price),
+      location: property.location,
+      category: String(property.categoryId),
+      amenities: property.amenities,
+    });
+  };
 
   const totalProperties = properties.length;
   const availableProperties = properties.filter((p) => p.isAvailable).length;
@@ -100,7 +117,7 @@ export default function OverviewMyProperties() {
         ))}
       </div>
 
-      {/* Search + Filters (UI only for now, no server-side wiring yet) */}
+      {/* Search + Filters */}
       <div className="bg-white rounded-t-2xl border border-b-0 border-[#e5eeff] p-4 flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
         <div className="relative flex-1">
           <Search
@@ -154,7 +171,7 @@ export default function OverviewMyProperties() {
       {/* Table */}
       <div className="bg-white rounded-b-2xl border border-[#e5eeff] max-h-120 overflow-y-auto overflow-x-auto">
         {isLoading && (
-          <p className="text-sm text-[#515f74] p-4">Loading properties...</p>
+          <p className="text-sm text-[#515f74] p-4 flex gap-2 items-center"><Spinner /> Loading properties...</p>
         )}
 
         {isError && (
@@ -220,8 +237,7 @@ export default function OverviewMyProperties() {
                   </td>
                   <td className="px-4 py-3">
                     <span className="inline-block bg-[#eff4ff] text-[#1d4ed8] text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap">
-                      {/* TODO: swap categoryId for category.name once available */}
-                      {property.categoryId}
+                      {property.category.name}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -250,6 +266,7 @@ export default function OverviewMyProperties() {
                       />
                       <button
                         aria-label="Edit property"
+                        onClick={() => openEdit(property)}
                         className="w-7 h-7 flex items-center justify-center rounded-md bg-[#eff4ff] text-[#1d4ed8] hover:bg-[#dbeafe] transition-colors cursor-pointer"
                       >
                         <Pencil size={13} />
@@ -279,6 +296,14 @@ export default function OverviewMyProperties() {
         }}
         propertyId={deleteTarget?.id ?? null}
         propertyName={deleteTarget?.name}
+      />
+
+      <PropertyUpdateModal
+        open={editTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditTarget(null);
+        }}
+        property={editTarget}
       />
     </div>
   );

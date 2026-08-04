@@ -1,15 +1,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { createProperty } from "@/lib/api/properties";
+import { updateProperty } from "@/lib/api/properties";
 import { CreatePropertyPayload } from "@/types/property";
 
-export function useCreateProperty() {
+type IUpdateProperty = {
+  payload: CreatePropertyPayload;
+  id: number;
+}
+
+export function useUpdateProperty() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: CreatePropertyPayload) => createProperty(payload),
+    mutationFn: ({payload, id}: IUpdateProperty) => updateProperty(payload, id),
     onSuccess: () => {
-      toast.success("Property created successfully");
+      toast.success("Property updated successfully");
       queryClient.invalidateQueries({ queryKey: ["landlord-properties"] });
     },
     onError: (error: Error) => {
