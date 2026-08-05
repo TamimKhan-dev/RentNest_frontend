@@ -11,7 +11,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -29,11 +28,6 @@ import { Spinner } from "@/components/ui/spinner";
 
 export default function OverviewMyProperties() {
   const { data: properties = [], isLoading, isError } = useLandlordProperties();
-  const [toggles, setToggles] = useState<Record<number, boolean>>({});
-  const isActive = (property: Property) => toggles[property.id] ?? property.isAvailable;
-  const toggleActive = (id: number) => {
-    setToggles((prev) => ({ ...prev, [id]: !isActive({ id } as Property) }));
-  };
 
   const [deleteTarget, setDeleteTarget] = useState<{
     id: number;
@@ -49,8 +43,9 @@ export default function OverviewMyProperties() {
       description: property.description,
       price: String(property.price),
       location: property.location,
-      category: String(property.categoryId),
+      categoryId: Number(property.categoryId),
       amenities: property.amenities,
+      isAvailable: property.isAvailable,
     });
   };
 
@@ -260,10 +255,6 @@ export default function OverviewMyProperties() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <Switch
-                        checked={isActive(property)}
-                        onCheckedChange={() => toggleActive(property.id)}
-                      />
                       <button
                         aria-label="Edit property"
                         onClick={() => openEdit(property)}

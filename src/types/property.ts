@@ -22,7 +22,7 @@ export type CreatePropertyPayload = {
   categoryId: number;
   isAvailable: boolean;
   amenities: string[];
-  image: string | null;
+  image?: string | null;
 };
 
 export type UpdatePropertyPayload = {

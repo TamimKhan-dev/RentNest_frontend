@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { updateProperty } from "@/lib/api/properties";
-import { CreatePropertyPayload } from "@/types/property";
+import { UpdatePropertyPayload } from "@/types/property";
 
 type IUpdateProperty = {
-  payload: CreatePropertyPayload;
+  payload: UpdatePropertyPayload;
   id: number;
 }
 

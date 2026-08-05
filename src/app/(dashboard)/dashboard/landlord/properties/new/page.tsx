@@ -37,7 +37,7 @@ export type PropertyFormData = {
 };
 
 const amenitiesList: { label: string; icon: LucideIcon }[] = [
-  { label: "WiFi", icon: Wifi },
+  { label: "Wi-Fi", icon: Wifi },
   { label: "Parking", icon: ParkingSquare },
   { label: "Kitchen", icon: UtensilsCrossed },
   { label: "AC", icon: Snowflake },

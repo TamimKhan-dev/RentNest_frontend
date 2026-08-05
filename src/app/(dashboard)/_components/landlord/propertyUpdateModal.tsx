@@ -36,13 +36,16 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Switch } from "@/components/ui/switch";
+import { useUpdateProperty } from "@/hooks/useUpdateProperty";
 
 type EditPropertyFormData = {
   title: string;
   description: string;
   price: string;
   location: string;
-  category: string;
+  categoryId: number;
+  isAvailable: boolean;
 };
 
 export type EditablePropertyData = EditPropertyFormData & {
@@ -51,7 +54,7 @@ export type EditablePropertyData = EditPropertyFormData & {
 };
 
 const amenitiesList: { label: string; icon: LucideIcon }[] = [
-  { label: "WiFi", icon: Wifi },
+  { label: "Wi-Fi", icon: Wifi },
   { label: "Parking", icon: ParkingSquare },
   { label: "Kitchen", icon: UtensilsCrossed },
   { label: "AC", icon: Snowflake },
@@ -71,7 +74,6 @@ export default function PropertyUpdateModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   property: EditablePropertyData | null;
-  onSave?: (data: EditablePropertyData) => void;
 }) {
   const {
     register,
@@ -86,7 +88,8 @@ export default function PropertyUpdateModal({
           description: property.description,
           price: property.price,
           location: property.location,
-          category: property.category,
+          categoryId: property.categoryId,
+          isAvailable: property.isAvailable,
         }
       : undefined,
   });
@@ -122,13 +125,20 @@ export default function PropertyUpdateModal({
     onOpenChange(next);
   };
 
-  const onSubmit = (data: EditPropertyFormData) => {
-    // if (!property) return;
-    // onSave?.({ ...property, ...data, amenities: selectedAmenities });
-    // handleOpenChange(false);
+  const { mutateAsync: updateProperty } = useUpdateProperty();
 
-    console.log(data);
+  const onSubmit = async (data: EditPropertyFormData) => {
+    if (!property) return;
+
+    const payload = {
+      ...data,
+      price: Number(data.price),
+      amenities: selectedAmenities,
+    };
+
+    await updateProperty({ id: property.id, payload });
   };
+
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -199,47 +209,71 @@ export default function PropertyUpdateModal({
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-[#0b1c30]">
-              Category
-            </label>
-            <Controller
-              name="category"
-              control={control}
-              render={({ field }) => {
-                const selected = categories?.find(
-                  (c) => String(c.id) === field.value || c.name === field.value,
-                );
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-[#0b1c30]">
+                Category
+              </label>
+              <Controller
+                name="categoryId"
+                control={control}
+                render={({ field }) => {
+                  const selected = categories?.find(
+                    (c) => String(c.id) === field.value,
+                  );
 
-                return (
-                  <Select
-                    value={selected ? String(selected.id) : undefined}
-                    onValueChange={field.onChange}
-                    disabled={categoriesLoading}
-                  >
-                    <SelectTrigger className="w-full h-auto py-2.5 rounded-lg border-[#bbcabf]">
-                      <SelectValue
-                        placeholder={
-                          categoriesLoading
-                            ? "Loading categories..."
-                            : "Select a category"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories?.map((category) => (
-                        <SelectItem
-                          key={category.id}
-                          value={String(category.id)}
-                        >
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                );
-              }}
-            />
+                  return (
+                    <Select
+                      value={selected ? String(selected.id) : undefined}
+                      onValueChange={field.onChange}
+                      disabled={categoriesLoading}
+                    >
+                      <SelectTrigger className="w-full h-auto py-2.5 rounded-lg border-[#bbcabf]">
+                        <SelectValue
+                          placeholder={
+                            categoriesLoading
+                              ? "Loading categories..."
+                              : "Select a category"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories?.map((category) => (
+                          <SelectItem
+                            key={category.id}
+                            value={String(category.id)}
+                          >
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  );
+                }}
+              />
+            </div>
+
+            <div className="bg-[#eff4ff] rounded-lg p-3.5 flex items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-[#0b1c30] mb-0.5">
+                  Availability
+                </p>
+                <p className="text-xs text-[#515f74]">
+                  Ready for tenants to book.
+                </p>
+              </div>
+              <Controller
+                name="isAvailable"
+                control={control}
+                render={({ field }) => (
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    className="shrink-0 mt-0.5"
+                  />
+                )}
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
