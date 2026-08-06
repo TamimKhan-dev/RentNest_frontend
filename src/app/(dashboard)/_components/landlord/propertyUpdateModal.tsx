@@ -44,7 +44,7 @@ type EditPropertyFormData = {
   description: string;
   price: string;
   location: string;
-  categoryId: number;
+  categoryId: string;
   isAvailable: boolean;
 };
 
@@ -133,6 +133,7 @@ export default function PropertyUpdateModal({
     const payload = {
       ...data,
       price: Number(data.price),
+      categoryId: Number(data.categoryId),
       amenities: selectedAmenities,
     };
 

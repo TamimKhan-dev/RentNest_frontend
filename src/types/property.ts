@@ -7,7 +7,7 @@ export type Property = {
   amenities: string[];
   isAvailable: boolean;
   image: string | null;
-  categoryId: number;
+  categoryId: string;
   category: {id: number; name: string}, 
   ownerId: number;
   createdAt: string;

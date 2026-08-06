@@ -43,7 +43,7 @@ export default function OverviewMyProperties() {
       description: property.description,
       price: String(property.price),
       location: property.location,
-      categoryId: Number(property.categoryId),
+      categoryId: String(property.categoryId),
       amenities: property.amenities,
       isAvailable: property.isAvailable,
     });
