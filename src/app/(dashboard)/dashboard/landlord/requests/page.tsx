@@ -36,10 +36,14 @@ const statusStyles: Record<Status, string> = {
 export default function RentalRequestsPage() {
   const { data: requests = [], isLoading, isError } = useRentalRequests();
 
+  const activeRequests = requests.filter((request) => request.status === "ACTIVE").length;
+  const pendingRequests = requests.filter((request) => request.status === "PENDING").length;
+  const approvedRequests = requests.filter((request) => request.status === "APPROVED").length;
+
   const stats = [
     {
       label: "Total Requests",
-      value: 24,
+      value: requests.length,
       change: "+12%",
       icon: Inbox,
       bg: "bg-[#dbeafe]",
@@ -48,7 +52,7 @@ export default function RentalRequestsPage() {
     },
     {
       label: "Pending Review",
-      value: 8,
+      value: pendingRequests,
       icon: Clock,
       bg: "bg-[#fef3c7]",
       iconColor: "text-[#b45309]",
@@ -56,7 +60,7 @@ export default function RentalRequestsPage() {
     },
     {
       label: "Approved",
-      value: 12,
+      value: approvedRequests,
       icon: CheckCircle2,
       bg: "bg-[#e0e7ff]",
       iconColor: "text-[#4338ca]",
@@ -64,7 +68,7 @@ export default function RentalRequestsPage() {
     },
     {
       label: "Active Rentals",
-      value: 4,
+      value: activeRequests,
       icon: KeyRound,
       highlight: true,
     },
