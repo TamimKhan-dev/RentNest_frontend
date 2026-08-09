@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Users,
   Home,
@@ -44,22 +44,37 @@ export default function OverviewUserManagement() {
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
   const [role, setRole] = useState<string>("");
-  const {
-    data: users = [],
-    isLoading,
-    isError,
-  } = useUsersInformation({ page, search, role });
+  const [debouncedSearch, setDebouncedSearch] = useState<string>("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const { data, isLoading, isError } = useUsersInformation({
+    page,
+    search: debouncedSearch,
+    role,
+  });
+
+  const users = data?.users ?? [];
+  const totalUsers = data?.totalUsers ?? 0;
+
   const { data: properties = [] } = useAdminProperties();
   const { data: requests = [] } = useAdminRentalRequests();
+
   const USERS_PER_PAGE = 6;
-  const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
+  const totalPages = Math.ceil(totalUsers / USERS_PER_PAGE);
 
   const pendingRentalRequests = requests.filter(
     (request: AdminRentalRequests) => request.status === "PENDING",
   ).length;
 
   const stats = [
-    { label: "Total Users", value: users.length, icon: Users },
+    { label: "Total Users", value: totalUsers, icon: Users },
     { label: "Total Properties", value: properties.length, icon: Home },
     {
       label: "Pending Rental Requests",
@@ -122,14 +137,14 @@ export default function OverviewUserManagement() {
               />
             </div>
             <Select value={role} onValueChange={setRole}>
-              <SelectTrigger className="h-auto py-2.5 rounded-lg border-[#e5eeff] text-sm w-full sm:w-35">
+              <SelectTrigger className="h-auto py-2.5 rounded-lg border-[#e5eeff] text-sm w-full sm:w-35 cursor-pointer">
                 <SelectValue placeholder="All Roles" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="All">All Roles</SelectItem>
-                <SelectItem value="TENANT">Tenant</SelectItem>
-                <SelectItem value="LANDLORD">Landlord</SelectItem>
-                <SelectItem value="ADMIN">Admin</SelectItem>
+                <SelectItem className="cursor-pointer" value="ALL">All Roles</SelectItem>
+                <SelectItem className="cursor-pointer" value="TENANT">Tenant</SelectItem>
+                <SelectItem className="cursor-pointer" value="LANDLORD">Landlord</SelectItem>
+                <SelectItem className="cursor-pointer" value="ADMIN">Admin</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -229,15 +244,15 @@ export default function OverviewUserManagement() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-xs h-auto px-4 py-1.5 rounded-lg border-[#ba1a1a]/30 text-[#ba1a1a] hover:bg-[#ffdad6] whitespace-nowrap"
+                          className="text-xs h-auto px-4 py-1.5 rounded-lg border-[#ba1a1a]/30 text-[#ba1a1a] hover:bg-[#ffdad6] whitespace-nowrap cursor-pointer"
                         >
-                          Ban
+                          Ban 
                         </Button>
                       ) : (
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-xs h-auto px-4 py-1.5 rounded-lg border-[#006c49]/30 text-[#006c49] hover:bg-[#d7f5e9] whitespace-nowrap"
+                          className="text-xs h-auto px-4 py-1.5 rounded-lg border-[#006c49]/30 text-[#006c49] hover:bg-[#d7f5e9] whitespace-nowrap cursor-pointer"
                         >
                           Unban
                         </Button>
@@ -263,7 +278,7 @@ export default function OverviewUserManagement() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="w-7 h-7 flex items-center justify-center rounded-md border border-[#e5eeff] text-[#515f74] hover:bg-[#f8f9ff] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-7 h-7 flex items-center justify-center rounded-md border border-[#e5eeff] text-[#515f74] hover:bg-[#f8f9ff] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               aria-label="Previous page"
             >
               <ChevronLeft size={14} />
@@ -274,7 +289,7 @@ export default function OverviewUserManagement() {
               <button
                 key={n}
                 onClick={() => setPage(n)}
-                className={`w-7 h-7 flex items-center justify-center rounded-md text-xs font-medium border transition-colors ${
+                className={`w-7 h-7 flex items-center justify-center rounded-md text-xs font-medium border transition-colors cursor-pointer ${
                   page === n
                     ? "bg-[#006c49] border-[#006c49] text-white"
                     : "border-[#e5eeff] text-[#0b1c30] hover:bg-[#f8f9ff]"
@@ -288,7 +303,7 @@ export default function OverviewUserManagement() {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="w-7 h-7 flex items-center justify-center rounded-md border border-[#e5eeff] text-[#515f74] hover:bg-[#f8f9ff] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-7 h-7 flex items-center justify-center rounded-md border border-[#e5eeff] text-[#515f74] hover:bg-[#f8f9ff] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               aria-label="Next page"
             >
               <ChevronRight size={14} />

@@ -1,4 +1,4 @@
-import { QuerySearchParams, UserDetails } from "@/types/admin";
+import { QuerySearchParams } from "@/types/admin";
 
 export async function getUsersInformation({
   page = 1,
@@ -18,7 +18,7 @@ export async function getUsersInformation({
     throw new Error(json?.message || "Failed to load users");
   }
 
-  return json.data as UserDetails[];
+  return json.data;
 }
 
 export async function getAdminRentalRequests() {
