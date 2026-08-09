@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import DashboardShell from "./_components/dashboardShell";
-import { UserRole } from "./_components/sidebar";
+import { UserRole } from "@/types/userTypes";
 
 
 

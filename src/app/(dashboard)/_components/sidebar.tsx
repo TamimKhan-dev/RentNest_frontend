@@ -8,7 +8,7 @@ import {
   type LucideIcon,
   CreditCard,
   ClipboardList,
-  Inbox,
+  Inbox
 } from "lucide-react";
 import {
   Sheet,
@@ -18,8 +18,7 @@ import {
 } from "@/components/ui/sheet";
 import Logo from "@/components/shared/Logo";
 import SidebarContent from "./sidebarContent";
-
-export type UserRole = "TENANT" | "LANDLORD" | "ADMIN";
+import { UserRole } from "@/types/userTypes";
 
 type NavItem = {
   label: string;
@@ -60,9 +59,9 @@ const roleNav: Record<UserRole, NavSection> = {
   ADMIN: {
     label: "Admin",
     items: [
-      { label: "Overview", icon: LayoutGrid, href: "/dashboard/admin" },
+      { label: "Overview & Users", icon: Users2, href: "/dashboard/admin" },
       { label: "Properties", icon: Building2, href: "/dashboard/admin/properties" },
-      { label: "Users", icon: Users2, href: "/dashboard/admin/users" },
+      { label: "Rental-requests", icon: Inbox, href: "/dashboard/admin/requests" },
     ],
   },
 };

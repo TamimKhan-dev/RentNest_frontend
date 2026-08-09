@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Sidebar, { UserRole } from "./sidebar";
 import DashboardHeader from "./dashboardHeader";
+import { UserRole } from "@/types/userTypes";
+import Sidebar from "./sidebar";
 
 
 export default function DashboardShell({
