@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import DashboardHeader from "./dashboardHeader";
-import { UserRole } from "@/types/userTypes";
+import { UserRole } from "@/types/admin";
 import Sidebar from "./sidebar";
 
 

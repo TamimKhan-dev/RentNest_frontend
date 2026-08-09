@@ -19,9 +19,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UserDetails, UserRole } from "@/types/userTypes";
+import { AdminRentalRequests, UserDetails, UserRole } from "@/types/admin";
 import { useUsersInformation } from "@/hooks/useUsersInformation";
 import { Spinner } from "@/components/ui/spinner";
+import { useAdminProperties } from "@/hooks/useAdminProperties";
+import { useAdminRentalRequests } from "@/hooks/useAdminRentalRequests";
 
 const roleStyles: Record<UserRole, string> = {
   TENANT: "bg-[#e0e7ff] text-[#4338ca]",
@@ -39,15 +41,33 @@ function initials(name: string) {
 }
 
 export default function OverviewUserManagement() {
-  const { data: users = [], isLoading, isError } = useUsersInformation();
-  const [page, setPage] = useState(1);
-  const totalPages = 5;
+  const [page, setPage] = useState<number>(1);
+  const [search, setSearch] = useState<string>("");
+  const [role, setRole] = useState<string>("");
+  const {
+    data: users = [],
+    isLoading,
+    isError,
+  } = useUsersInformation({ page, search, role });
+  const { data: properties = [] } = useAdminProperties();
+  const { data: requests = [] } = useAdminRentalRequests();
+  const USERS_PER_PAGE = 6;
+  const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
+
+  const pendingRentalRequests = requests.filter(
+    (request: AdminRentalRequests) => request.status === "PENDING",
+  ).length;
 
   const stats = [
     { label: "Total Users", value: users.length, icon: Users },
-    { label: "Total Properties", value: "452", icon: Home },
-    { label: "Pending Rental Requests", value: "28", icon: ClipboardCheck },
+    { label: "Total Properties", value: properties.length, icon: Home },
+    {
+      label: "Pending Rental Requests",
+      value: pendingRentalRequests,
+      icon: ClipboardCheck,
+    },
   ];
+
   return (
     <div className="w-full">
       {/* Header */}
@@ -95,19 +115,21 @@ export default function OverviewUserManagement() {
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8]"
               />
               <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search users by name or email..."
                 className="pl-9 h-auto py-2.5 rounded-lg border-[#e5eeff] bg-[#f8f9ff]"
               />
             </div>
-            <Select defaultValue="all">
+            <Select value={role} onValueChange={setRole}>
               <SelectTrigger className="h-auto py-2.5 rounded-lg border-[#e5eeff] text-sm w-full sm:w-35">
                 <SelectValue placeholder="All Roles" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="tenant">Tenant</SelectItem>
-                <SelectItem value="landlord">Landlord</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="All">All Roles</SelectItem>
+                <SelectItem value="TENANT">Tenant</SelectItem>
+                <SelectItem value="LANDLORD">Landlord</SelectItem>
+                <SelectItem value="ADMIN">Admin</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -176,7 +198,11 @@ export default function OverviewUserManagement() {
                       </span>
                     </td>
                     <td className="px-6 py-3 text-[#515f74] whitespace-nowrap">
-                      {user.createdAt}
+                      {new Date(user.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "2-digit",
+                        year: "numeric",
+                      })}
                     </td>
                     <td className="px-6 py-3">
                       <span
@@ -227,19 +253,24 @@ export default function OverviewUserManagement() {
         {/* Footer: count + pagination */}
         <div className="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#e5eeff]">
           <p className="text-xs text-[#515f74]">
-            Showing <span className="font-semibold text-[#0b1c30]">1-10</span>{" "}
-            of <span className="font-semibold text-[#0b1c30]">48</span> users
+            Showing <span className="font-semibold text-[#0b1c30]">1-6</span> of{" "}
+            <span className="font-semibold text-[#0b1c30]">{users.length}</span>{" "}
+            users
           </p>
 
           <div className="flex items-center gap-1.5">
+            {/* Previous */}
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="w-7 h-7 flex items-center justify-center rounded-md border border-[#e5eeff] text-[#515f74] hover:bg-[#f8f9ff] transition-colors"
+              disabled={page === 1}
+              className="w-7 h-7 flex items-center justify-center rounded-md border border-[#e5eeff] text-[#515f74] hover:bg-[#f8f9ff] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Previous page"
             >
               <ChevronLeft size={14} />
             </button>
-            {[1, 2, 3].map((n) => (
+
+            {/* Page numbers */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
               <button
                 key={n}
                 onClick={() => setPage(n)}
@@ -252,20 +283,12 @@ export default function OverviewUserManagement() {
                 {n}
               </button>
             ))}
-            <span className="text-[#515f74] text-xs px-0.5">…</span>
-            <button
-              onClick={() => setPage(totalPages)}
-              className={`w-7 h-7 flex items-center justify-center rounded-md text-xs font-medium border transition-colors ${
-                page === totalPages
-                  ? "bg-[#006c49] border-[#006c49] text-white"
-                  : "border-[#e5eeff] text-[#0b1c30] hover:bg-[#f8f9ff]"
-              }`}
-            >
-              {totalPages}
-            </button>
+
+            {/* Next */}
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="w-7 h-7 flex items-center justify-center rounded-md border border-[#e5eeff] text-[#515f74] hover:bg-[#f8f9ff] transition-colors"
+              disabled={page === totalPages}
+              className="w-7 h-7 flex items-center justify-center rounded-md border border-[#e5eeff] text-[#515f74] hover:bg-[#f8f9ff] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Next page"
             >
               <ChevronRight size={14} />

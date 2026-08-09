@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/sheet";
 import Logo from "@/components/shared/Logo";
 import SidebarContent from "./sidebarContent";
-import { UserRole } from "@/types/userTypes";
+import { UserRole } from "@/types/admin";
 
 type NavItem = {
   label: string;

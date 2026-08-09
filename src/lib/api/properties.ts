@@ -1,4 +1,8 @@
-import { CreatePropertyPayload, Property, UpdatePropertyPayload } from "@/types/property";
+import {
+  CreatePropertyPayload,
+  Property,
+  UpdatePropertyPayload,
+} from "@/types/property";
 
 export async function createProperty(payload: CreatePropertyPayload) {
   const res = await fetch("/api/landlord/properties", {
@@ -16,8 +20,11 @@ export async function createProperty(payload: CreatePropertyPayload) {
   return data;
 }
 
-export async function updateProperty(payload: UpdatePropertyPayload, id: number) {
-    const res = await fetch(`/api/landlord/properties/${id}`, {
+export async function updateProperty(
+  payload: UpdatePropertyPayload,
+  id: number,
+) {
+  const res = await fetch(`/api/landlord/properties/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -30,7 +37,7 @@ export async function updateProperty(payload: UpdatePropertyPayload, id: number)
   }
 
   return data;
-};
+}
 
 export async function getLandlordProperties(): Promise<Property[]> {
   const res = await fetch("/api/landlord/landlord-properties");
