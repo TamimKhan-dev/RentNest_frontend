@@ -10,6 +10,7 @@ import {
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useIsBannedUser } from "@/hooks/useIsBannedUser";
 
 export function BanUserModal({
   open,
@@ -22,7 +23,8 @@ export function BanUserModal({
   userId: number | null;
   userName?: string;
 }) {
-  const isPending = false;
+  
+  const { mutateAsync: banUser, isPending } = useIsBannedUser();
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -46,8 +48,11 @@ export function BanUserModal({
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
           <Button
-            // onClick={() => banUser()}
-            // disabled={isPending}
+            onClick={async () => {
+              await banUser({userId, isBanned: true})
+              if (!isPending) onOpenChange(false);
+            }}
+            disabled={isPending}
             className="w-full bg-[#ba1a1a] hover:bg-[#ba1a1a]/90 text-white font-semibold h-auto py-2.5 rounded-lg cursor-pointer"
           >
             {isPending ? (
@@ -62,7 +67,7 @@ export function BanUserModal({
           <Button
             type="button"
             variant="outline"
-            // disabled={isPending}
+            disabled={isPending}
             onClick={() => onOpenChange(false)}
             className="w-full border-[#bbcabf] text-[#0b1c30] h-auto py-2.5 rounded-lg cursor-pointer"
           >

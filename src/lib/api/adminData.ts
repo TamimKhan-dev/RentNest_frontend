@@ -21,6 +21,21 @@ export async function getUsersInformation({
   return json.data;
 }
 
+export async function banUnbanUser(userId: number | null, isBanned: boolean) {
+  const res = await fetch(`/api/admin/users/${userId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ isBanned }),
+  });
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data?.message || "Failed to update user!");
+  }
+
+  return data;
+}
+
 export async function getAdminRentalRequests() {
   const res = await fetch("/api/admin/rentals");
   const json = await res.json();

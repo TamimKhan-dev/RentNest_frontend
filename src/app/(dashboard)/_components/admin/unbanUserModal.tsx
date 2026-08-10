@@ -11,6 +11,7 @@ import {
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useIsBannedUser } from "@/hooks/useIsBannedUser";
 
 export function UnbanUserModal({
   open,
@@ -23,7 +24,7 @@ export function UnbanUserModal({
   userId: number | null;
   userName?: string;
 }) {
-  const isPending = false;
+  const { mutateAsync: unBanUser, isPending } = useIsBannedUser();
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -47,8 +48,11 @@ export function UnbanUserModal({
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
           <Button
-            // onClick={() => unbanUser()}
-            // disabled={isPending}
+            onClick={async () => {
+              await unBanUser({ userId, isBanned: false})
+              if (!isPending) onOpenChange(false);
+            }}
+            disabled={isPending}
             className="w-full bg-[#006c49] hover:bg-[#006c49]/90 text-white font-semibold h-auto py-2.5 rounded-lg cursor-pointer"
           >
             {isPending ? (
