@@ -18,6 +18,25 @@ export type UserDetails = {
   updatedAt: string;
 };
 
+export type AdminProperties = {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  location: string;
+  amenities: string[];
+  isAvailable: boolean;
+  image: string | null;
+  categoryId: number;
+  category: {
+    id: number;
+    name: string;
+  };
+  ownerId: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type AdminRentalRequests = {
   id: number;
   tenantId: number;
