@@ -140,7 +140,7 @@ export default function OverviewUserManagement() {
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search users by name or email..."
+                  placeholder="Search users by name..."
                   className="pl-9 h-auto py-2.5 rounded-lg border-[#e5eeff] bg-[#f8f9ff]"
                 />
               </div>

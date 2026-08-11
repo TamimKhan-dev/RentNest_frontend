@@ -18,6 +18,22 @@ export type UserDetails = {
   updatedAt: string;
 };
 
+export type AdminRentalRequest = {
+  id: number;
+  status: Status;
+  createdAt: string;
+  property: {
+    title: string;
+    location: string;
+    price: number;
+    image: string | null;
+  };
+  tenant: {
+    name: string;
+    email: string;
+  };
+};
+
 export type AdminProperties = {
   id: number;
   title: string;

@@ -110,18 +110,18 @@ export default function AdminAllPropertiesPage() {
       <div className="bg-white border border-[#e5eeff] overflow-x-auto max-h-122">
         {isLoading && (
           <p className="text-sm text-[#515f74] p-4 flex gap-2 items-center">
-            <Spinner /> Loading users...
+            <Spinner /> Loading properties...
           </p>
         )}
 
         {isError && (
           <p className="text-sm text-red-500 p-4">
-            Failed to load users. Please try again.
+            Failed to load properties. Please try again.
           </p>
         )}
 
         {!isLoading && !isError && properties.length === 0 && (
-          <p className="text-sm text-[#515f74] p-4">No users found!.</p>
+          <p className="text-sm text-[#515f74] p-4">No properties found!.</p>
         )}
         {!isLoading && !isError && properties.length > 0 && (
           <table className="w-full min-w-205 text-sm">
