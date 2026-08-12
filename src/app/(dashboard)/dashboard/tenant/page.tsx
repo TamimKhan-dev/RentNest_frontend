@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/select";
 import OverviewTable from "../../_components/tenant/overviewTable";
 import { useQuery } from "@tanstack/react-query";
-import SpinnerDefault from "@/app/loading";
 import { getRentalRequestStats } from "@/utils/utils";
 
 export type Status =
@@ -41,41 +40,38 @@ const fetchRentalRequests = async () => {
 export default function OverviewRentalRequests() {
   const [page, setPage] = useState(1);
   const totalPages = 2;
-  const { data, error, isLoading, isError } = useQuery({
+  const { data: requests = [], isLoading, isError } = useQuery({
     queryKey: ["rentalRequests"],
     queryFn: fetchRentalRequests,
     refetchOnMount: "always"
   });
-
-  if (isLoading) return <SpinnerDefault />;
-  if (isError) return <div>Error: {(error as Error).message}</div>;
-  const stats = getRentalRequestStats(data.data);
+  const stats = getRentalRequestStats(requests.data);
 
   const statsCards = [
     {
       label: "Total Requests",
-      value: stats.totalRentalRequests,
+      value: stats?.totalRentalRequests || 0,
       icon: ClipboardList,
       bg: "bg-[#e0e7ff]",
       iconColor: "text-[#4338ca]",
     },
     {
       label: "Pending",
-      value: stats.pendingRentalRequests,
+      value: stats?.pendingRentalRequests || 0,
       icon: Clock,
       bg: "bg-[#fef3c7]",
       iconColor: "text-[#b45309]",
     },
     {
       label: "Approved",
-      value: stats.approvedRentalRequests,
+      value: stats?.approvedRentalRequests || 0,
       icon: CheckCircle2,
       bg: "bg-[#ede9fe]",
       iconColor: "text-[#6d28d9]",
     },
     {
       label: "Active Rentals",
-      value: stats.activeRentals,
+      value: stats?.activeRentals || 0,
       icon: Home,
       bg: "bg-[#d7f5e9]",
       iconColor: "text-[#006c49]",
@@ -150,7 +146,7 @@ export default function OverviewRentalRequests() {
       </div>
 
       {/* Table */}
-      <OverviewTable data={data.data} />
+      <OverviewTable data={requests.data} isError={isError} isLoading={isLoading}/>
 
       {/* Footer: count + pagination */}
       <div className="bg-white rounded-b-2xl border border-t-0 border-[#e5eeff] px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">

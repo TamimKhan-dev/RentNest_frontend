@@ -10,10 +10,12 @@ export default function ActionCell({
   status,
   rentalId,
   propertyId,
+  hasReviewed,
 }: {
   status: Status;
   rentalId: number;
   propertyId: number;
+  hasReviewed: boolean;
 }) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const queryClient = useQueryClient();
@@ -90,9 +92,10 @@ export default function ActionCell({
           <Button
             onClick={() => setIsModalOpen(true)}
             variant="outline"
+            disabled={hasReviewed}
             className="text-xs h-auto px-4 py-2 rounded-lg bg-[#f1f5f9] text-[#475569] border-[#cbd5e1] whitespace-nowrap cursor-pointer"
           >
-            Leave Review
+            { hasReviewed ? "Reviewed" : "Leave Review"}
           </Button>
 
           <LeaveReviewModal

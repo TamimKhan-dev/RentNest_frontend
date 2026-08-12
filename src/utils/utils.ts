@@ -22,8 +22,8 @@ type RentalRequest = {
   updatedAt: string;
 };
 
-export const getRentalRequestStats = (requests: RentalRequest[]) => {
-  return requests.reduce(
+export const getRentalRequestStats = (requests: RentalRequest[] | undefined) => {
+  return requests?.reduce(
     (stats, request) => {
       stats.totalRentalRequests++;
 
