@@ -25,6 +25,7 @@ import PropertyUpdateModal, {
   type EditablePropertyData,
 } from "../../_components/landlord/propertyUpdateModal";
 import { Spinner } from "@/components/ui/spinner";
+import Image from "next/image";
 
 export default function OverviewMyProperties() {
   const { data: properties = [], isLoading, isError } = useLandlordProperties();
@@ -208,11 +209,12 @@ export default function OverviewMyProperties() {
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={property.image ?? "/placeholder-property.png"}
+                      <Image
+                        src={property.image || "https://i.ibb.co.com/QFWY3SYV/no-image.webp"}
                         alt={property.title}
                         className="w-10 h-10 rounded-lg object-cover shrink-0"
+                        width={100}
+                        height={100}
                       />
                       <div className="min-w-0">
                         <p className="font-semibold text-[#1d4ed8] whitespace-nowrap">
