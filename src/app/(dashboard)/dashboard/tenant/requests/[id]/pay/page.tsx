@@ -20,8 +20,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import SpinnerDefault from "@/app/loading";
+import Image from "next/image";
+import { useTenantRentalRequest } from "@/hooks/useTenantRentalRequest";
+import { RentalRequestData } from "@/types/tenant";
+import { usePaymentInitiator } from "@/hooks/usePaymentInitiator";
 
 const amenityIconMap: Record<string, LucideIcon> = {
   WiFi: Wifi,
@@ -34,45 +37,12 @@ const FallbackIcon = CheckCircle2;
 export default function ConfirmAndPayPage() {
   const { id } = useParams();
 
-  const { data, error, isLoading, isError } = useQuery({
-    queryKey: ["rentalRequests", id],
-    queryFn: async () => {
-      const res = await fetch(`/api/rentals/${id}`, {
-        cache: "no-cache",
-      });
-      if (!res.ok) throw new Error("Network response was not ok");
-      return res.json();
-    },
-  });
-
-const { mutate: initiateCheckout, isPending: isCheckoutLoading } =
-  useMutation({
-    mutationFn: async () => {
-      const res = await fetch(`/api/payments/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ rentalRequestId: id }),
-      });
-      if (!res.ok) throw new Error("Failed to create checkout session");
-      return res.json();
-    },
-    onSuccess: (data) => {
-      const url = data?.data?.paymentUrl;
-      if (url) {
-        window.location.href = url;
-      }
-    },
-    onError: (err) => {
-      console.error(err);
-    },
-  });
+  const { data: request = {} as RentalRequestData, error, isLoading, isError } = useTenantRentalRequest(Number(id));
+  const { mutate: initiateCheckout, isPending: isCheckoutLoading } = usePaymentInitiator();
 
   if (isLoading) return <SpinnerDefault />;
   if (isError) return <div>Error: {(error as Error).message}</div>;
-  const { property } = data.data;
-  const rentalRequest = data.data;
+  const property = request.property;
 
   return (
     <div className="w-full max-w-180 mx-auto">
@@ -103,11 +73,12 @@ const { mutate: initiateCheckout, isPending: isCheckoutLoading } =
 
       {/* Property card */}
       <div className="bg-white rounded-2xl border border-[#e5eeff] p-5 mb-6 flex flex-col sm:flex-row gap-5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="https://picsum.photos/seed/emerald-heights-suite/400/400"
+        <Image
+          src={property.image ?? "https://i.ibb.co.com/QFWY3SYV/no-image.webp"}
           alt="property Image"
-          className="w-full sm:w-40 h-40 rounded-xl object-cover shrink-0"
+          className="w-full sm:w-40 h-40 rounded-xl object-cover shrink-0 border-2"
+          width={150}
+          height={150}
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-4 mb-2">
@@ -154,7 +125,7 @@ const { mutate: initiateCheckout, isPending: isCheckoutLoading } =
               Request ID
             </p>
             <p className="text-sm font-semibold text-[#0b1c30]">
-              {rentalRequest.id}
+              {request.id}
             </p>
           </div>
           <div>
@@ -162,7 +133,11 @@ const { mutate: initiateCheckout, isPending: isCheckoutLoading } =
               Requested On
             </p>
             <p className="text-sm font-semibold text-[#0b1c30]">
-              {rentalRequest.createdAt}
+              {new Date(request.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "2-digit",
+                year: "numeric"
+              })}
             </p>
           </div>
           <div>
@@ -199,9 +174,9 @@ const { mutate: initiateCheckout, isPending: isCheckoutLoading } =
           </p>
         </div>
         <Button
-          onClick={() => initiateCheckout()}
+          onClick={() => initiateCheckout(Number(id))}
           disabled={isCheckoutLoading}
-          className="w-full sm:w-auto bg-[#006c49] hover:bg-[#006c49]/90 text-white font-semibold h-auto py-3 px-6 rounded-xl gap-2 whitespace-nowrap"
+          className="w-full sm:w-auto bg-[#006c49] hover:bg-[#006c49]/90 text-white font-semibold h-auto py-3 px-6 rounded-xl gap-2 whitespace-nowrap cursor-pointer"
         >
           {isCheckoutLoading ? (
             <>

@@ -210,7 +210,7 @@ export default function OverviewMyProperties() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <Image
-                        src={property.image || "https://i.ibb.co.com/QFWY3SYV/no-image.webp"}
+                        src={property.image ?? "https://i.ibb.co.com/QFWY3SYV/no-image.webp"}
                         alt={property.title}
                         className="w-10 h-10 rounded-lg object-cover shrink-0"
                         width={100}

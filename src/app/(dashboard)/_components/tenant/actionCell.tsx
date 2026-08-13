@@ -68,7 +68,7 @@ export default function ActionCell({
           onClick={() => markAsCompleted()}
           disabled={isCompleting}
           variant="outline"
-          className="text-xs h-auto px-4 py-2 rounded-lg bg-[#e6f4ea] text-[#0f7a3d] border border-[#bfe3cc] hover:bg-[#d3ecdc] whitespace-nowrap font-medium"
+          className="text-xs h-auto px-4 py-2 rounded-lg bg-[#e6f4ea] text-[#0f7a3d] border border-[#bfe3cc] hover:bg-[#d3ecdc] whitespace-nowrap font-medium cursor-pointer"
         >
           {isCompleting ? (
             <>
