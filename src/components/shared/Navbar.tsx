@@ -194,7 +194,7 @@ export default function Navbar({
             <DropdownMenuContent align="end" className="w-48 md:hidden">
               {navLinks.map((link) => (
                 <DropdownMenuItem key={link.label}>
-                  {link.label}
+                  <Link href="">{link.label}</Link>
                 </DropdownMenuItem>
               ))}
               {!user.success && (
@@ -203,7 +203,9 @@ export default function Navbar({
                   <DropdownMenuItem>
                     <Link href="/login">Log in</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>Sign up</DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href="/register"></Link>
+                    </DropdownMenuItem>
                 </>
               )}
             </DropdownMenuContent>

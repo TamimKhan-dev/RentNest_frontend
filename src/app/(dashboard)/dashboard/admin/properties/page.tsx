@@ -150,7 +150,7 @@ export default function AdminAllPropertiesPage() {
                     <div className="flex items-center gap-3">
                       <Image
                         src={
-                          property.image ||
+                          property.image ??
                           "https://i.ibb.co.com/QFWY3SYV/no-image.webp"
                         }
                         alt={property.title}
