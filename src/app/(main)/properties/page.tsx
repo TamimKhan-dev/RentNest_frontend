@@ -24,7 +24,6 @@ import {
   LucideIcon,
 } from "lucide-react";
 import { usePublicProperties } from "@/hooks/usePublicProperties";
-import SpinnerDefault from "@/app/loading";
 import { PublicProperty } from "@/types/publicTypes";
 import { useCategories } from "@/hooks/useCategories";
 import {
@@ -35,6 +34,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import PropertyCardSkeleton from "../_components/Properties/propertyCardSkeleton";
+import ErrorPage from "@/app/error";
 
 const amenitiesList: { label: string; icon: LucideIcon }[] = [
   { label: "Wi-Fi", icon: Wifi },
@@ -106,11 +107,11 @@ export default function ExploreProperties() {
 
   return (
     <section className="w-full min-h-[93vh] bg-[#f8f9ff] px-4 md:px-12 py-10">
-      {isLoading ? (
-        <SpinnerDefault />
+      {/* {isLoading ? (
+        <PropertyCardSkeleton />
       ) : isError ? (
         <div>Error: {(error as Error).message}</div>
-      ) : (
+      ) : ( */}
         <div className="max-w-7xl mx-auto ">
           {/* Header */}
           <div className="mb-6">
@@ -270,11 +271,13 @@ export default function ExploreProperties() {
           </div>
 
           {/* Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            {properties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
-          </div>
+          {isLoading ? <PropertyCardSkeleton /> : isError ? <div>Error: {(error as Error).message}</div> : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+              {properties.map((property) => (
+                <PropertyCard key={property.id} property={property} />
+              ))}
+            </div>
+          )}
 
           {/* Pagination */}
           <div className="flex items-center justify-center gap-2">
@@ -311,7 +314,7 @@ export default function ExploreProperties() {
             </button>
           </div>
         </div>
-      )}
+      
     </section>
   );
 }
