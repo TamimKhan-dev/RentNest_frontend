@@ -1,4 +1,3 @@
-
 export type PublicProperty = {
   id: number;
   title: string;
@@ -15,4 +14,14 @@ export type PublicProperty = {
   category: {
     name: string;
   };
+};
+
+export type PropertyQueries = {
+  page?: number;
+  limit?: number;
+  location?: string;
+  type?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  amenities?: string;
 };

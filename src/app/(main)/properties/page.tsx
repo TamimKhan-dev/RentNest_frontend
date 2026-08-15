@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import PropertyCard from "../_components/Properties/propertyCard";
 import {
@@ -11,27 +11,98 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Wifi,
+  ParkingSquare,
+  UtensilsCrossed,
+  Snowflake,
+  DoorOpen,
+  WashingMachine,
+  ShieldCheck,
+  PawPrint,
+  Trees,
+  ArrowUpDown,
+  LucideIcon,
 } from "lucide-react";
 import { usePublicProperties } from "@/hooks/usePublicProperties";
 import SpinnerDefault from "@/app/loading";
 import { PublicProperty } from "@/types/publicTypes";
+import { useCategories } from "@/hooks/useCategories";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-const filters = [
-  { label: "Price Range", icon: Tag },
-  { label: "Property Type", icon: Home },
-  { label: "More Filters", icon: SlidersHorizontal },
+const amenitiesList: { label: string; icon: LucideIcon }[] = [
+  { label: "Wi-Fi", icon: Wifi },
+  { label: "Parking", icon: ParkingSquare },
+  { label: "Kitchen", icon: UtensilsCrossed },
+  { label: "AC", icon: Snowflake },
+  { label: "Balcony", icon: DoorOpen },
+  { label: "Laundry", icon: WashingMachine },
+  { label: "Security", icon: ShieldCheck },
+  { label: "Pets", icon: PawPrint },
+  { label: "Garden", icon: Trees },
+  { label: "Elevator", icon: ArrowUpDown },
 ];
 
 export default function ExploreProperties() {
   const [page, setPage] = useState(1);
-  const totalPages = 12;
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [location, setLocation] = useState("");
+  const [propertyType, setPropertyType] = useState("");
+  const [debouncedLocation, setDebouncedLocation] = useState("");
+  const [debouncedMinPrice, setDebouncedMinPrice] = useState("");
+  const [debouncedMaxPrice, setDebouncedMaxPrice] = useState("");
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
 
-  const {
-    data: properties = [] as PublicProperty[],
-    isLoading,
-    isError,
-    error,
-  } = usePublicProperties();
+  const LIMIT = 8;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedLocation(location);
+      setPage(1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [location]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedMinPrice(minPrice);
+      setDebouncedMaxPrice(maxPrice);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [minPrice, maxPrice]);
+
+  const { data: categories = [] } = useCategories();
+  const { data, isLoading, isError, error } = usePublicProperties({
+    page,
+    limit: LIMIT,
+    type: propertyType,
+    location: debouncedLocation,
+    amenities: selectedAmenities.join(","),
+    minPrice: debouncedMinPrice ? Number(debouncedMinPrice) : undefined,
+    maxPrice: debouncedMaxPrice ? Number(debouncedMaxPrice) : undefined,
+  });
+
+  const toggleAmenity = (amenity: string) => {
+    setSelectedAmenities((prev) =>
+      prev.includes(amenity)
+        ? prev.filter((item) => item !== amenity)
+        : [...prev, amenity],
+    );
+
+    setPage(1);
+  };
+
+  const properties: PublicProperty[] = data?.properties ?? [];
+  const totalPages: number = data?.totalPages ?? 0;
 
   return (
     <section className="w-full min-h-[93vh] bg-[#f8f9ff] px-4 md:px-12 py-10">
@@ -60,20 +131,134 @@ export default function ExploreProperties() {
               />
               <Input
                 placeholder="Search destinations..."
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 className="pl-9 h-auto py-2.5 rounded-full border-[#bbcabf] bg-white"
               />
             </div>
 
-            {filters.map(({ label, icon: Icon }) => (
-              <button
-                key={label}
-                className="flex items-center gap-2 bg-white border border-[#bbcabf] rounded-full px-4 py-2.5 text-sm text-[#0b1c30] hover:bg-[#eff4ff] transition-colors whitespace-nowrap"
-              >
-                <Icon size={15} className="text-[#515f74]" />
-                {label}
-                <ChevronDown size={14} className="text-[#515f74]" />
-              </button>
-            ))}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 bg-white border border-[#bbcabf] rounded-full px-4 py-2.5 text-sm text-[#0b1c30] hover:bg-[#eff4ff] transition-colors whitespace-nowrap cursor-pointer">
+                  <Home size={15} className="text-[#515f74]" />
+                  {propertyType || "All"}
+                  <ChevronDown size={14} className="text-[#515f74]" />
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => setPropertyType("")}
+                  className="cursor-pointer"
+                >
+                  All
+                </DropdownMenuItem>
+
+                {categories?.map((category: { id: number; name: string }) => (
+                  <DropdownMenuItem
+                    key={category.id}
+                    onClick={() => setPropertyType(category.name)}
+                    className="cursor-pointer"
+                  >
+                    {category.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 bg-white border border-[#bbcabf] rounded-full px-4 py-2.5 text-sm text-[#0b1c30] hover:bg-[#eff4ff] transition-colors whitespace-nowrap cursor-pointer">
+                  <Tag size={15} className="text-[#515f74] cursor-pointer" />
+                  {minPrice || maxPrice
+                    ? `$${minPrice || "0"} - $${maxPrice || "∞"}`
+                    : "Price Range"}
+                  <ChevronDown size={14} className="text-[#515f74]" />
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent className="w-64 p-4">
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm">Minimum Price</label>
+                    <Input
+                      type="number"
+                      placeholder="Min price"
+                      value={minPrice}
+                      onChange={(e) => {
+                        setMinPrice(e.target.value);
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm">Maximum Price</label>
+                    <Input
+                      type="number"
+                      placeholder="Max price"
+                      value={maxPrice}
+                      onChange={(e) => {
+                        setMaxPrice(e.target.value);
+                      }}
+                    />
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setMinPrice("");
+                      setMaxPrice("");
+                    }}
+                    className="text-sm text-red-500 hover:underline cursor-pointer"
+                  >
+                    Clear Price
+                  </button>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="flex items-center gap-2 bg-white border border-[#bbcabf] rounded-full px-4 py-2.5 text-sm text-[#0b1c30] hover:bg-[#eff4ff] transition-colors whitespace-nowrap cursor-pointer">
+                  <SlidersHorizontal size={15} className="text-[#515f74]" />
+                  More Filters
+                  <ChevronDown size={14} className="text-[#515f74]" />
+                </button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-80 p-4">
+                <h3 className="font-semibold text-sm mb-4">Amenities</h3>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {amenitiesList.map(({ label, icon: Icon }) => (
+                    <label
+                      key={label}
+                      className="flex items-center gap-2 text-sm cursor-pointer"
+                    >
+                      <Checkbox
+                        checked={selectedAmenities.includes(label)}
+                        onCheckedChange={() => toggleAmenity(label)}
+                        className="cursor-pointer"
+                      />
+
+                      <Icon size={15} className="text-[#515f74]" />
+                      <span>{label}</span>
+                    </label>
+                  ))}
+                </div>
+
+                {selectedAmenities.length > 0 && (
+                  <button
+                    onClick={() => {
+                      setSelectedAmenities([]);
+                      setPage(1);
+                    }}
+                    className="mt-4 text-sm text-red-500 hover:underline cursor-pointer"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </PopoverContent>
+            </Popover>
 
             <div className="ml-auto flex items-center gap-2 text-sm text-[#515f74]">
               Sort by:
@@ -95,13 +280,14 @@ export default function ExploreProperties() {
           <div className="flex items-center justify-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
               className="w-8 h-8 flex items-center justify-center rounded-full text-[#515f74] hover:bg-[#eff4ff] transition-colors"
               aria-label="Previous page"
             >
               <ChevronLeft size={16} />
             </button>
 
-            {[1, 2, 3].map((n) => (
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
               <button
                 key={n}
                 onClick={() => setPage(n)}
@@ -115,21 +301,9 @@ export default function ExploreProperties() {
               </button>
             ))}
 
-            <span className="text-[#515f74] text-sm px-1">…</span>
-
-            <button
-              onClick={() => setPage(totalPages)}
-              className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium transition-colors ${
-                page === totalPages
-                  ? "bg-[#006c49] text-white"
-                  : "text-[#0b1c30] hover:bg-[#eff4ff]"
-              }`}
-            >
-              {totalPages}
-            </button>
-
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
               className="w-8 h-8 flex items-center justify-center rounded-full text-[#515f74] hover:bg-[#eff4ff] transition-colors"
               aria-label="Next page"
             >
