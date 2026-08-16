@@ -1,36 +1,162 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏡 RentNest — Property Rental Platform
 
-## Getting Started
+RentNest is a full-stack property rental platform that connects tenants with landlords through a secure and user-friendly rental experience.
 
-First, run the development server:
+The platform allows users to explore available properties, search and filter listings, send rental requests, complete payments through Stripe, manage rentals, and leave reviews after completing a rental.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🌐 Live Website
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Live URL:** https://your-vercel-domain.vercel.app
+**BACKEND API URL:** https://rentnest-coral.vercel.app 
+**BACKEND Repository URL:** https://github.com/TamimKhan-dev/RentNest.git
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+# ✨ Features
 
-To learn more about Next.js, take a look at the following resources:
+## 🔐 Authentication
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- User registration and login
+- JWT-based authentication
+- Role-based access control
+- Protected dashboard routes
+- Persistent authentication using cookies
+- Automatic role-based dashboard redirection
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### User Roles
 
-## Deploy on Vercel
+- 👨‍💼 Admin
+- 🏠 Landlord
+- 🧑‍💼 Tenant
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🏠 Property Discovery
+
+Public users can:
+
+- Browse available properties
+- View detailed property information
+- Search properties by location
+- Filter properties by:
+  - Property type
+  - Price range
+  - Amenities
+- Sort property listings
+- Navigate through paginated results
+- View featured properties on the homepage
+
+---
+
+## 📋 Rental Requests
+
+Tenants can:
+
+- Send rental requests to landlords
+- View their rental requests
+- Track rental status
+- Complete active rentals
+
+The frontend handles appropriate feedback when:
+
+- The user is not authenticated
+- A rental request already exists
+- A property is unavailable
+- The request fails
+
+---
+
+## 💳 Stripe Payment
+
+RentNest integrates Stripe Checkout for real payment processing.
+
+The frontend provides:
+
+- Payment initiation
+- Stripe Checkout redirection
+- Payment success page
+- Payment cancellation page
+- Payment status handling
+- Payment history
+- Individual payment details
+
+---
+
+## ⭐ Reviews
+
+Tenants can:
+
+- Submit reviews after completing a rental
+- View previously submitted reviews
+- Edit reviews
+- Delete reviews
+- Prevent duplicate reviews for the same property
+
+---
+
+## 👤 Tenant Dashboard
+
+Tenants can manage:
+
+- Rental requests
+- Payment history
+- Reviews
+- Profile information
+
+---
+
+## 🏠 Landlord Dashboard
+
+Landlords can:
+
+- Create properties
+- Update properties
+- Delete properties
+- View their listed properties
+- Manage rental requests
+- Approve or reject rental requests
+
+---
+
+## 🛡️ Admin Dashboard
+
+Administrators can:
+
+- View platform statistics
+- Manage users
+- Search users
+- Filter users by role
+- Paginate users
+- Ban users
+- Unban users
+
+---
+
+# 🔎 Advanced Search & Filtering
+
+The property discovery page provides real-time search and filtering.
+
+Available filters include:
+
+- 📍 Location
+- 💰 Minimum price
+- 💰 Maximum price
+- 🏠 Property type
+- 🛋️ Amenities
+
+Search inputs use debouncing to prevent unnecessary API requests while the user is typing.
+
+Pagination is also implemented to improve performance and usability when browsing large numbers of properties.
+
+---
+
+# 🧩 API Integration
+
+The frontend consumes the backend REST API for authentication, properties, rental requests, payments, reviews, users, and dashboard functionality.
+
+A detailed mapping of frontend features to backend endpoints is available in:
+
+```text
+API_INTEGRATION.md
