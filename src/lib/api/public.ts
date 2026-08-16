@@ -30,4 +30,29 @@ export async function getCategories() {
   }
 
   return json.data;
-};
+}
+
+export async function getSingleProperty(id: number) {
+  const res = await fetch(`/api/properties/${id}`);
+  const json = await res.json();
+  if (!res.ok) {
+    throw new Error(json?.message || "Failed to load Property");
+  }
+
+  return json.data;
+}
+
+export async function sendBookingRequests(propertyId: number) {
+  const res = await fetch("/api/rentals", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ propertyId }),
+  });
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(json?.message || "Failed to send booking request!");
+  }
+
+  return json;
+}

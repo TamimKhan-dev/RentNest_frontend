@@ -35,7 +35,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import PropertyCardSkeleton from "../_components/Properties/propertyCardSkeleton";
-import ErrorPage from "@/app/error";
 
 const amenitiesList: { label: string; icon: LucideIcon }[] = [
   { label: "Wi-Fi", icon: Wifi },
@@ -107,11 +106,6 @@ export default function ExploreProperties() {
 
   return (
     <section className="w-full min-h-[93vh] bg-[#f8f9ff] px-4 md:px-12 py-10">
-      {/* {isLoading ? (
-        <PropertyCardSkeleton />
-      ) : isError ? (
-        <div>Error: {(error as Error).message}</div>
-      ) : ( */}
         <div className="max-w-7xl mx-auto ">
           {/* Header */}
           <div className="mb-6">

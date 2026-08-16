@@ -2,7 +2,7 @@ import { jwtUtils } from "@/utils/jwt";
 import { JwtPayload } from "jsonwebtoken";
 import { NextRequest, NextResponse } from "next/server";
 
-const publicRoutes = ["/", "/properties", "/api/properties"];
+const publicRoutes = ["/", "/properties", "/api/properties", "/api/rentals"];
 const authRoutes = ["/login", "/register"];
 
 export async function proxy(request: NextRequest) {

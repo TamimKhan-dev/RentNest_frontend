@@ -1,20 +1,10 @@
-type IPropertyDeatails = {
-  name: string;
-  location: string;
-  rating: number;
-  verified: boolean;
-  image: string;
-  status: string;
-  price: string;
-  type: string;
-  posted: string;
-  description: string;
-};
+import { PublicProperty } from "@/types/publicTypes";
+
 
 export default function Description({
   property,
 }: {
-  property: IPropertyDeatails;
+  property: PublicProperty;
 }) {
   return (
     <div className="bg-white rounded-2xl border border-[#e5eeff] p-6">
@@ -22,18 +12,10 @@ export default function Description({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
         <div>
           <p className="text-[11px] uppercase tracking-wide text-[#515f74] mb-1">
-            Status
-          </p>
-          <p className="text-sm font-semibold text-[#006c49]">
-            {property.status}
-          </p>
-        </div>
-        <div>
-          <p className="text-[11px] uppercase tracking-wide text-[#515f74] mb-1">
             Price
           </p>
           <p className="text-sm font-semibold text-[#0b1c30]">
-            {property.price}/mo
+            ${property.price}/mon
           </p>
         </div>
         <div>
@@ -41,7 +23,7 @@ export default function Description({
             Type
           </p>
           <p className="text-sm font-semibold text-[#0b1c30]">
-            {property.type}
+            {property.category.name}
           </p>
         </div>
         <div>
@@ -49,7 +31,11 @@ export default function Description({
             Posted
           </p>
           <p className="text-sm font-semibold text-[#0b1c30]">
-            {property.posted}
+            {new Date(property.createdAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "2-digit",
+              year: "numeric"
+            })}
           </p>
         </div>
       </div>
