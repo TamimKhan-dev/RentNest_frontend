@@ -1,86 +1,26 @@
+"use client"
+
 import { Heart, Star, MapPin, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { usePublicProperties } from "@/hooks/usePublicProperties";
+import { PublicProperty } from "@/types/publicTypes";
+import Image from "next/image";
+import PropertyCardSkeleton from "../Properties/propertyCardSkeleton";
 
-type Property = {
-  name: string;
-  location: string;
-  price: string;
-  period: string;
-  rating: number;
-  badge: string;
-  image: string;
-};
-
-const properties: Property[] = [
-  {
-    name: "The Emerald Suite",
-    location: "Chelsea, Manhattan",
-    price: "$4,200",
-    period: "/month",
-    rating: 4.9,
-    badge: "Verified",
-    image: "https://picsum.photos/seed/emerald-suite/500/380",
-  },
-  {
-    name: "Villa Mariposa",
-    location: "Malibu, California",
-    price: "$6,800",
-    period: "/month",
-    rating: 4.8,
-    badge: "Featured",
-    image: "https://picsum.photos/seed/villa-mariposa/500/380",
-  },
-  {
-    name: "Skyline Loft",
-    location: "Shoreditch, London",
-    price: "£2,900",
-    period: "/month",
-    rating: 5.0,
-    badge: "New",
-    image: "https://picsum.photos/seed/skyline-loft/500/380",
-  },
-  {
-    name: "Nordic Retreat",
-    location: "Oslo, Norway",
-    price: "€1,850",
-    period: "/month",
-    rating: 4.7,
-    badge: "Verified",
-    image: "https://picsum.photos/seed/nordic-retreat/500/380",
-  },
-  {
-    name: "Zen Penthouse",
-    location: "Ginza, Tokyo",
-    price: "¥850K",
-    period: "/month",
-    rating: 4.9,
-    badge: "Featured",
-    image: "https://picsum.photos/seed/zen-penthouse/500/380",
-  },
-  {
-    name: "Canal House",
-    location: "Jordaan, Amsterdam",
-    price: "€3,400",
-    period: "/month",
-    rating: 4.6,
-    badge: "Verified",
-    image: "https://picsum.photos/seed/canal-house/500/380",
-  },
-];
-
-function PropertyCard({ property }: { property: Property }) {
+function PropertyCard({ property }: { property: PublicProperty }) {
   return (
     <div className="bg-white rounded-2xl border border-[#e5eeff] overflow-hidden">
       <div className="relative h-44">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={property.image}
-          alt={property.name}
-          className="w-full h-full object-cover"
+        <Image
+          src={property.image ?? "https://i.ibb.co.com/QFWY3SYV/no-image.webp"}
+          alt={property.title}
+          className="w-full h-full object-contain"
+          width={500}
+          height={500}
         />
         <span className="absolute top-3 left-3 bg-[#006c49] text-white text-[10px] font-semibold px-2.5 py-1 rounded-full">
-          {property.badge}
+          Verified
         </span>
         <button
           aria-label="Save property"
@@ -93,12 +33,12 @@ function PropertyCard({ property }: { property: Property }) {
       <div className="p-4">
         <div className="flex items-center justify-between mb-1">
           <h3 className="font-semibold text-sm text-[#0b1c30]">
-            {property.name}
+            {property.title}
           </h3>
           <div className="flex items-center gap-1 shrink-0">
             <Star size={13} className="fill-[#006c49] text-[#006c49]" />
             <span className="text-xs font-medium text-[#0b1c30]">
-              {property.rating}
+              4.8
             </span>
           </div>
         </div>
@@ -109,16 +49,22 @@ function PropertyCard({ property }: { property: Property }) {
         </div>
 
         <div className="flex items-center justify-between">
-          <p className="text-sm">
-            <span className="font-bold text-[#0b1c30]">{property.price}</span>
-            <span className="text-[#515f74]">{property.period}</span>
+          <p className="text-sm space-x-3">
+            <span className="font-bold text-[#0b1c30]">${property.price}\mon</span>
+            <span className="text-[#515f74]">{new Date(property.createdAt).toLocaleDateString("en-US", { 
+              month: "short",
+              day: "2-digit",
+              year: "numeric"
+            })}</span>
           </p>
-          <Button
+          <Link href={`/properties/${property.id}`}>
+            <Button
             size="sm"
             className="bg-[#0b1c30] hover:bg-[#0b1c30]/90 text-white text-xs h-auto px-4 py-2 rounded-lg cursor-pointer"
           >
             Details
           </Button>
+          </Link>
         </div>
       </div>
     </div>
@@ -126,6 +72,12 @@ function PropertyCard({ property }: { property: Property }) {
 }
 
 export default function FeaturedProperties() {
+  const {data, isLoading } = usePublicProperties({
+    limit: 6,
+  });
+
+  const properties = data?.properties ?? [];
+
   return (
     <section className="w-full px-4 md:px-12 py-16 mb-20">
       <div className="max-w-7xl mx-auto">
@@ -149,8 +101,8 @@ export default function FeaturedProperties() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map((property) => (
-            <PropertyCard key={property.name} property={property} />
+          { isLoading ? <PropertyCardSkeleton cardNumber={6} /> : properties.map((property: PublicProperty) => (
+            <PropertyCard key={property.id} property={property} />
           ))}
         </div>
       </div>
